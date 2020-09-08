@@ -9,7 +9,28 @@ from typing import Dict, List
 
 
 class CustomUserManager(BaseUserManager):
+    """
+    用户管理的自定义 Manager
+    """
     def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str = None, group: str = 'borrower'):
+        """
+        生成新的用户
+
+        :param student_id: 学号
+        :type student_id: int
+        :param password: 密码
+        :type password: str
+        :param name: 用户名字
+        :type name: str
+        :param register_time: 注册时间（utc时间戳）
+        :type register_time: int
+        :param email: 邮箱
+        :type email: str
+        :param group: 权限组，分为 'borrower', 'provider' and 'admin'
+        :type group: str
+        :return: user
+        :rtype: User
+        """
         if not student_id:
             raise ValueError('The student_id must be set')
         user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email)
@@ -19,14 +40,29 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str = None):
-        return self.create_user(student_id, password, name, register_time, email=email, group='admin')
+        """
+        生成新的管理员
 
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_customusermanager'
+        :param student_id: 学号
+        :type student_id: int
+        :param password: 密码
+        :type password: str
+        :param name: 用户名字
+        :type name: str
+        :param register_time: 注册时间（utc时间戳）
+        :type register_time: int
+        :param email: 邮箱
+        :type email: str
+        :return: user
+        :rtype: User
+        """
+        return self.create_user(student_id, password, name, register_time, email=email, group='admin')
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    """
+    用户模型
+    """
     user_id = models.AutoField(primary_key=True)
     student_id = models.BigIntegerField(unique=True)
     name = models.CharField(max_length=128)
@@ -49,7 +85,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.student_id
 
-    def toDict(self):
+    def toDict(self) -> Dict[str, object]:
+        """
+        用户模型转字典类型对象
+
+        :return: dict
+        :rtype: Dict
+        """
         return {
             "user_id": self.user_id,
             "student_id": self.student_id,
@@ -58,25 +100,87 @@ class User(AbstractBaseUser, PermissionsMixin):
             "email": self.email
         }
 
+    def changeGroup(self, new_group: str) -> None:
+        """
+        更改用户权限组
 
+        :param new_group: 新权限组，分为 'borrower', 'provider' and 'admin'
+        :type new_group: str
+        :return: None
+        :rtype: None
+        """
+        self.groups.clear()
+        self.groups.add(get_group(new_group))
+
+
+# TODO: 数据统计未完善，日志未加入
 # 权限设定
 perm_borrower = [
-    ['Can login', 'can_login']
+    # 自己用户信息
+    'can_get_user',
+    # 其他用户信息
+    'can_get_user_id',
+    # 列出设备
+    'can_get_device_list',
+    # 设备详情
+    'can_get_device_id',
+    # 列出借用的设备
+    'can_get_borrowed_device_userid',
+    # 获得留言
+    'can_get_device_id_comment_list',
+    # 发布留言
+    'can_post_device_id_comment',
+    # 删除留言
+    'can_delete_device_id_comment_id',
+    # 申请成为设备提供者
+    'can_post_apply_become_provider',
+    # 查看自己的申请
+    'can_get_apply_become_provider',
+    # 申请借用设备
+    'can_post_apply_borrow_device',
+    # 归还设备
+    'can_post_apply_return_device_device_id'
 ]
-perm_provider = [
-    ['Can login', 'can_login']
-]
-perm_admin = [
-    ['Can login', 'can_login']
-]
+perm_provider: List = list(perm_borrower)
+perm_provider.extend([
+    # 修改设备信息
+    'can_patch_device_id',
+    # 删除设备
+    'can_delete_device_id',
+    # 查看自己可以处理的申请（设备提供者）
+    'can_get_apply_become_provider_list',
+    # 处理设备提供者申请
+    'can_post_apply_become_provider_apply_id',
+    # 申请上架设备
+    'can_post_apply_new_device',
+    # 处理借用申请
+    'can_post_apply_borrow_device_apply_id',
+])
+perm_admin: List = list(perm_provider)
+perm_admin.extend([
+    # 列出用户
+    'can_get_user_list',
+    # 修改用户组
+    'can_patch_admin_user_id'
+    # 删除用户
+    'can_delete_user_id',
+    # 数据统计
+    'can_get_dashboard',
+    # 查看全部的申请（管理员）
+    'can_get_apply_become_provider_admin',
+    # 处理上架申请
+    'can_post_apply_new_device_apply_id',
+])
 
 
 def get_group(group: str) -> Group:
     """
+    根据权限组，返回对应权限组对象
+
     :param group: 三个权限标识之一。'admin', 'provider' 和 'borrower'。
     :type group: str
-    :return: None
-    :rtype: None
+    :return: 权限组对象
+    :rtype: Group
     """
     print(group)
     if group == 'borrower' or group not in ['admin', 'provider', 'borrower']:
@@ -110,8 +214,8 @@ def get_group(group: str) -> Group:
             return g
 
 
-def _perms_mapping(perm_obj: List):
+def _perms_mapping(perm_str: str):
     content_type = ContentType.objects.get_for_model(User)
-    return Permission.objects.create(name=perm_obj[0],
-                                     codename=perm_obj[1],
+    return Permission.objects.create(name=perm_str.capitalize(),
+                                     codename=perm_str,
                                      content_type=content_type)

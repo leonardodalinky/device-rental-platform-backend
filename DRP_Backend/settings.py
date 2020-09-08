@@ -49,7 +49,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'webservice.apps.LoginRequireMiddleware',
-    'webservice.apps.MethodValidateMiddleware'
+    'webservice.apps.MethodValidateMiddleware',
+    'webservice.apps.PermissionValidateMiddleware'
 ]
 
 ROOT_URLCONF = 'DRP_Backend.urls'

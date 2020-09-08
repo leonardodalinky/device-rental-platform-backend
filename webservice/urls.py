@@ -8,20 +8,52 @@ from .views import device
 urlpatterns = [
     # 用户
     ## 自己用户信息
-    path('user', user.user, {'method': 'GET'}, name='user'),
+    path('user', user.get_user,
+         {
+             'method': 'GET',
+             'perms_required': ['can_get_user']
+         },
+         name='user'),
     ## 登录
-    path('user/login', user.login, {'method': 'POST'}, name='login'),
+    path('user/login', user.post_login,
+         {
+             'method': 'POST',
+             'perms_required': []
+         },
+         name='login'),
     ## 登出
-    path('user/logout', user.logout, {'method': 'POST'}, name='logout'),
+    path('user/logout', user.post_logout,
+         {
+             'method': 'POST',
+             'perms_required': []
+         },
+         name='logout'),
     ## 注册
-    path('user/register', user.register, {'method': 'POST'}, name='register'),
+    path('user/register', user.post_register,
+         {
+             'method': 'POST',
+             'perms_required': []
+         },
+         name='register'),
     ## 其他用户信息
-    path('user/<int:other_user_id>', user.user_id, {'method': 'GET'}, name='user_id'),
+    path('user/<int:other_user_id>', user.get_user_id,
+         {
+             'method': 'GET',
+             'perms_required': ['can_get_user_id']
+         },
+         name='user_id'),
     ## 未登录时跳转
-    path('user/not_login', user.not_login, {'method': 'ALL'}, name='not_login'),
+    path('user/not_login', user.all_not_login,
+         {
+             'method': 'ALL',
+             'perms_required': []
+         },
+         name='not_login'),
 
-    # TODO: 其他
-    # 用户管理
+    # TODO: 用户管理
+    ## 列出用户
+    path('user/not_login', user.get_user_list, {'method': 'ALL'}, name='not_login'),
+
 
     # 设备
     ## 列出设备

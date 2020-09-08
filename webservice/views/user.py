@@ -11,20 +11,36 @@ from ..models.user import User
 
 from datetime import datetime
 
+# 用户基本操作
 
-def user(request: HttpRequest, **kwargs) -> JsonResponse:
+
+def get_user(request: HttpRequest, **kwargs) -> JsonResponse:
     """
+    自己用户信息
+
     :param request: 视图请求
     :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
     :return: JsonResponse
     :rtype: JsonResponse
     """
-    # 返回何种用户信息
     _user: User = request.user
+    # TODO: 返回自己权限
     return create_success_json_res_with({"user": _user.toDict()})
 
 
-def login(request: HttpRequest, **kwargs) -> JsonResponse:
+def post_login(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    登录
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     student_id: int = request.POST.get('student_id')
     email: str = request.POST.get('email')
     password: str = request.POST.get('password')
@@ -59,12 +75,32 @@ def login(request: HttpRequest, **kwargs) -> JsonResponse:
             return JsonResponse(create_error_json_obj(102, '无此用户'), status=400)
 
 
-def logout(request: HttpRequest, **kwargs) -> JsonResponse:
+def post_logout(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    登出
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     logout_s(request)
     return create_success_json_res_with({})
 
 
-def register(request: HttpRequest, **kwargs) -> JsonResponse:
+def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    注册
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     student_id: int = request.POST.get('student_id')
     email: str = request.POST.get('email')
     password: str = request.POST.get('password')
@@ -83,7 +119,19 @@ def register(request: HttpRequest, **kwargs) -> JsonResponse:
     return create_success_json_res_with({"user_id": u.user_id})
 
 
-def user_id(request: HttpRequest, other_user_id: int, **kwargs) -> JsonResponse:
+def get_user_id(request: HttpRequest, other_user_id: int, **kwargs) -> JsonResponse:
+    """
+    获取其他用户信息
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param other_user_id: 待查询的其他用户id
+    :type other_user_id: int
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     other_users: QuerySet = User.objects.filter(user_id=other_user_id)
     if other_users.count() != 1:
         return JsonResponse(create_error_json_obj(-1, '未知错误'), status=400)
@@ -91,5 +139,20 @@ def user_id(request: HttpRequest, other_user_id: int, **kwargs) -> JsonResponse:
     return create_success_json_res_with({"user": other_user.toDict()})
 
 
-def not_login(request: HttpRequest, **kwargs) -> JsonResponse:
+def all_not_login(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    未登录时返回
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     return create_not_login_json_response()
+
+
+# 用户管理
+def get_user_list(request: HttpRequest, **kwargs) -> JsonResponse:
+    pass
