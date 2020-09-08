@@ -1,9 +1,10 @@
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse, QueryDict
+from django.http import HttpRequest, JsonResponse, QueryDict
 from django.db.models.query import QuerySet
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_s
 from django.contrib.auth import logout as logout_s
 from django.views import View
+from django.core.validators import validate_email
 
 from ..common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
 from ..models.user import User
@@ -26,8 +27,13 @@ def get_user(request: HttpRequest, **kwargs) -> JsonResponse:
     :rtype: JsonResponse
     """
     _user: User = request.user
-    # TODO: 返回自己权限
-    return create_success_json_res_with({"user": _user.toDict()})
+    # 返回自己权限
+    return create_success_json_res_with(
+        {
+            "user": _user.toDict(),
+            "perms": list(_user.get_group_permissions()),
+        }
+    )
 
 
 def post_login(request: HttpRequest, **kwargs) -> JsonResponse:
@@ -52,6 +58,7 @@ def post_login(request: HttpRequest, **kwargs) -> JsonResponse:
         return JsonResponse(create_error_json_obj(101, '密码错误'), status=400)
     # 邮箱转学号
     if student_id is None and email is not None:
+
         users: QuerySet[User] = User.objects.filter(email=email)
         if users.count() != 1:
             return JsonResponse(create_error_json_obj(102, '无此用户'), status=400)
@@ -111,6 +118,13 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
         return JsonResponse(create_error_json_obj(201, '学号已占用'), status=400)
     if User.objects.filter(email=email).count() != 0:
         return JsonResponse(create_error_json_obj(202, '邮箱已占用'), status=400)
+    if not isinstance(student_id, int):
+        return JsonResponse(create_error_json_obj(205, '学号类型错误'), status=400)
+    # 邮箱验证
+    try:
+        validate_email(email)
+    except:
+        return JsonResponse(create_error_json_obj(204, '邮箱格式错误'), status=400)
     # TODO: 检验密码复杂性
     if password == '':
         return JsonResponse(create_error_json_obj(203, '密码过于简单'), status=400)
@@ -170,7 +184,7 @@ class AdminUserId(View):
         if new_group not in ['admin', 'provider', 'borrower']:
             return JsonResponse(create_error_json_obj(302, '用户组名称错误'), status=400)
         user: User = users.get()
-        user.changeGroup(new_group)
+        user.change_group(new_group)
         return create_success_json_res_with({})
 
     def delete(self, request: HttpRequest, user_id: int, *args, **kwargs) -> JsonResponse:
