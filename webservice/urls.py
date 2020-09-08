@@ -18,12 +18,12 @@ urlpatterns = [
     ## 其他用户信息
     path('user/<int:other_user_id>', user.user_id, {'method': 'GET'}, name='user_id'),
     ## 未登录时跳转
-    path('user/not_login', user.not_login, {'method': 'ALL'}, name='not_login')
+    path('user/not_login', user.not_login, {'method': 'ALL'}, name='not_login'),
 
     # TODO: 其他
     # 用户管理
 
     # 设备
     ## 列出设备
-    path('device_list', device.device_list, name='device_list')
+    path('device_list', device.device_list, {'method': 'GET'}, name='device_list')
 ]
