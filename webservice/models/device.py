@@ -12,6 +12,7 @@ class Device(models.Model):
     created_time=models.IntegerField()
     borrower_id=models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='orrower_id')
     borrowed_time=models.IntegerField(null=True)
+    return_time=models.IntegerField(null=True)
 
     # class Meta:
     #     app_label = 'webservice'

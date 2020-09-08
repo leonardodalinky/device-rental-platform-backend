@@ -4,6 +4,9 @@ from django.urls import path
 
 from .views import user
 from .views import device
+from .views import create_apply
+
+urlpatterns = []
 
 urlpatterns = [
     # 用户
@@ -72,11 +75,44 @@ urlpatterns = [
 
     # 设备
     ## 列出设备
-    path('device_list', device.get_device_list, {'method': 'GET'}, name='device_list'),
-    ##设备详情
-    path('device/<int:device_id>', device.get_device_id, {'method': 'GET'}, name='device_details'),
-    ##修改设备
-    path('device/<int:device_id>', device.patch_device_id, {'method': 'PATCH'}, name='device_edit'),
-    ##删除设备
-    path('device/<int:device_id>', device.delete_device_id, {'method': 'DELETE'}, name='device_delete'),
+    path('device_list', device.get_device_list, 
+        {
+            'method': 'GET',
+            'perms_required': ['can_get_device_list'] 
+        }, 
+        name='device_list'),
+    ##设备详情与设备管理
+    path('device/<int:device_id>', device.DeviceId.as_view(), 
+        {
+            'method': ['GET','PATCH','DELETE'],
+            'perms_required': {
+                'GET': ['can_get_device_id'],
+                'PATCH': ['can_patch_device_id'],
+                'DELETE': ['can_delete_device_id']
+            }
+        }, 
+        name='device_device_id'),
+    
+    #上架申请
+    ##申请上架设备
+    path('apply/new-device', create_apply.post_apply_new_device,
+        {
+            'method': 'POST',
+            'perms_required': ['can_post_apply_new_device']
+        },
+        name='apply_new_device'),
+    ##允许上架设备
+    path('apply/new-device/<int:apply_id>/accept', create_apply.post_apply_new_device_apply_id_accept,
+        {
+            'method': 'POST',
+            'perms_required': ['can_post_apply_new_device_apply_id']
+        },
+        name='apply_new_device_apply_id_accept'),
+    ##拒绝上架设备
+    path('apply/new-device/<int:apply_id>/reject', create_apply.post_apply_new_device_apply_id_reject,
+        {
+            'method': 'POST',
+            'perms_required': ['can_post_apply_new_device_apply_id']
+        },
+        name='apply_new_device_apply_id_reject')
 ]

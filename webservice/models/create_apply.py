@@ -9,9 +9,9 @@ class CreateApply(models.Model):
     device_name=models.CharField(max_length=256)
     device_desciption=models.CharField(max_length=2048)
     status=models.IntegerField()
-    applicant_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='applicant_id')
+    applicant_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='CreateApply_applicant_id')
     apply_time=models.IntegerField()
-    handler_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='handler_id')
+    handler_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='CreateApply_handler_id')
     handle_time=models.IntegerField()
 
     # class Meta:
