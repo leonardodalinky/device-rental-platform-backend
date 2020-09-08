@@ -25,5 +25,5 @@ urlpatterns = [
 
     # 设备
     ## 列出设备
-    path('device_list', device.device_list, name='device_list')
+    path('device_list', device.device_list, {'method': 'GET'}, name='device_list')
 ]
