@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 from django.urls import resolve, reverse
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
-from .common import create_error_json_obj
+from .common.common import create_error_json_obj
 
 from typing import Dict, List
 
