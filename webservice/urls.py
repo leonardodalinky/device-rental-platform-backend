@@ -25,5 +25,11 @@ urlpatterns = [
 
     # 设备
     ## 列出设备
-    path('device_list', device.device_list, {'method': 'GET'}, name='device_list')
+    path('device_list', device.get_device_list, {'method': 'GET'}, name='device_list'),
+    ##设备详情
+    path('device/<int:device_id>', device.get_device_id, {'method': 'GET'}, name='device_details'),
+    ##修改设备
+    path('device/<int:device_id>', device.patch_device_id, {'method': 'PATCH'}, name='device_edit'),
+    ##删除设备
+    path('device/<int:device_id>', device.delete_device_id, {'method': 'DELETE'}, name='device_delete'),
 ]
