@@ -97,7 +97,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             "student_id": self.student_id,
             "name": self.name,
             "register_time": self.register_time,
-            "email": self.email
+            "email": self.email,
+            "group": self.groups.all().get().name
         }
 
     def changeGroup(self, new_group: str) -> None:
@@ -139,7 +140,7 @@ perm_borrower = [
     # 申请借用设备
     'can_post_apply_borrow_device',
     # 归还设备
-    'can_post_apply_return_device_device_id'
+    'can_post_apply_return_device_device_id',
 ]
 perm_provider: List = list(perm_borrower)
 perm_provider.extend([
@@ -159,9 +160,9 @@ perm_provider.extend([
 perm_admin: List = list(perm_provider)
 perm_admin.extend([
     # 列出用户
-    'can_get_user_list',
+    'can_get_admin_user_list',
     # 修改用户组
-    'can_patch_admin_user_id'
+    'can_patch_admin_user_id',
     # 删除用户
     'can_delete_user_id',
     # 数据统计
@@ -216,6 +217,13 @@ def get_group(group: str) -> Group:
 
 def _perms_mapping(perm_str: str):
     content_type = ContentType.objects.get_for_model(User)
-    return Permission.objects.create(name=perm_str.capitalize(),
-                                     codename=perm_str,
-                                     content_type=content_type)
+    perms = Permission.objects.filter(codename=perm_str)
+    if perms.count() == 1:
+        return perms.get()
+    elif perms.count() == 0:
+        return Permission.objects.create(name=perm_str.capitalize(),
+                                         codename=perm_str,
+                                         content_type=content_type)
+    else:
+        raise ValueError('Has more than 1 permission type')
+

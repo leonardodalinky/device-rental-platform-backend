@@ -10,7 +10,7 @@ class WebserviceConfig(AppConfig):
     name = 'webservice'
 
 
-Not_Login_Required = ['login', 'not_login', 'register', 'logout']
+Not_Login_Required = ['post_login', 'all_not_login', 'post_register', 'post_logout']
 
 
 class LoginRequireMiddleware:
@@ -27,7 +27,7 @@ class LoginRequireMiddleware:
         r = resolve(request.path)
         url_name: str = r.url_name
         if url_name not in Not_Login_Required and not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('not_login'))
+            return HttpResponseRedirect(reverse('all_not_login'))
 
         response = self.get_response(request)
 
@@ -103,7 +103,8 @@ class PermissionValidateMiddleware:
                     return JsonResponse(create_error_json_obj(403, '权限错误'), status=403)
         elif isinstance(perms, dict):
             # 方法字典形式
-            ps = perms.get(request.method)
+            ps = perms.get(request.method, [])
+            print(request.user.get_group_permissions())
             for p in ps:
                 if not request.user.has_perm('webservice.' + p):
                     return JsonResponse(create_error_json_obj(403, '权限错误'), status=403)

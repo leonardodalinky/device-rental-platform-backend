@@ -60,6 +60,8 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+webservice/migrations/*.py
+!webservice/migrations/__init__.py
 
 # Flask stuff:
 instance/

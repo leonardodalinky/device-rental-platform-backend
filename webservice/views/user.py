@@ -1,15 +1,15 @@
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse, QueryDict
 from django.db.models.query import QuerySet
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_s
 from django.contrib.auth import logout as logout_s
-from django.shortcuts import redirect
-from django.conf import settings
+from django.views import View
 
 from ..common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
 from ..models.user import User
 
 from datetime import datetime
+from typing import Dict, List
 
 # 用户基本操作
 
@@ -154,5 +154,29 @@ def all_not_login(request: HttpRequest, **kwargs) -> JsonResponse:
 
 
 # 用户管理
-def get_user_list(request: HttpRequest, **kwargs) -> JsonResponse:
-    pass
+def get_admin_user_list(request: HttpRequest, **kwargs) -> JsonResponse:
+    users: QuerySet = User.objects.all()
+    users_list: List[User] = list(users)
+    users_json_list: List[object] = list(map(lambda user: user.toDict(), users_list))
+    return create_success_json_res_with({"users": users_json_list})
+
+
+class AdminUserId(View):
+    def patch(self, request: HttpRequest, user_id: int, *args, **kwargs) -> JsonResponse:
+        users: QuerySet = User.objects.filter(user_id=user_id)
+        if users.count() != 1:
+            return JsonResponse(create_error_json_obj(301, '无此用户'), status=400)
+        new_group: str = QueryDict(request.body).get('group')
+        if new_group not in ['admin', 'provider', 'borrower']:
+            return JsonResponse(create_error_json_obj(302, '用户组名称错误'), status=400)
+        user: User = users.get()
+        user.changeGroup(new_group)
+        return create_success_json_res_with({})
+
+    def delete(self, request: HttpRequest, user_id: int, *args, **kwargs) -> JsonResponse:
+        users: QuerySet = User.objects.filter(user_id=user_id)
+        if users.count() != 1:
+            return JsonResponse(create_error_json_obj(301, '无此用户'), status=400)
+        user: User = users.get()
+        user.delete()
+        return create_success_json_res_with({})

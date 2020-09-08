@@ -13,46 +13,61 @@ urlpatterns = [
              'method': 'GET',
              'perms_required': ['can_get_user']
          },
-         name='user'),
+         name='get_user'),
     ## 登录
     path('user/login', user.post_login,
          {
              'method': 'POST',
              'perms_required': []
          },
-         name='login'),
+         name='post_login'),
     ## 登出
     path('user/logout', user.post_logout,
          {
              'method': 'POST',
              'perms_required': []
          },
-         name='logout'),
+         name='post_logout'),
     ## 注册
     path('user/register', user.post_register,
          {
              'method': 'POST',
              'perms_required': []
          },
-         name='register'),
+         name='post_register'),
     ## 其他用户信息
     path('user/<int:other_user_id>', user.get_user_id,
          {
              'method': 'GET',
              'perms_required': ['can_get_user_id']
          },
-         name='user_id'),
+         name='get_user_id'),
     ## 未登录时跳转
     path('user/not_login', user.all_not_login,
          {
              'method': 'ALL',
              'perms_required': []
          },
-         name='not_login'),
+         name='all_not_login'),
 
-    # TODO: 用户管理
+    # 用户管理
     ## 列出用户
-    path('user/not_login', user.get_user_list, {'method': 'ALL'}, name='not_login'),
+    path('admin/user_list', user.get_admin_user_list,
+         {
+             'method': 'GET',
+             'perms_required': ['can_get_admin_user_list']
+         },
+         name='get_user_list'),
+    ## 修改、删除用户
+    path('admin/user/<int:user_id>', user.AdminUserId.as_view(),
+         {
+             'method': ['PATCH', 'DELETE'],
+             'perms_required': {
+                 'PATCH': ['can_patch_admin_user_id'],
+                 'DELETE': ['can_delete_user_id']
+             }
+         },
+         name='get_admin_user_id'),
 
 
     # 设备
