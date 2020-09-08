@@ -1,3 +1,8 @@
+"""
+    Author: Leonardodalinky
+    Date: 2020/09/08
+    Description: 评价模型
+"""
 from django.http import HttpRequest, JsonResponse
 from django.db.models.query import QuerySet
 from django.views import View

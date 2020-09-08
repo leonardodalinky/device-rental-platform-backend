@@ -1,3 +1,8 @@
+"""
+    Author: Leonardodalinky
+    Date: 2020/09/07
+    Description: 用户模型的视图
+"""
 from django.http import HttpRequest, JsonResponse, QueryDict
 from django.db.models.query import QuerySet
 from django.contrib.auth import authenticate
@@ -6,10 +11,10 @@ from django.contrib.auth import logout as logout_s
 from django.views import View
 from django.core.validators import validate_email
 
-from ..common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
-from ..models.user import User
+from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
+from ..models.user import User, ActivateCode
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List
 
 # 用户基本操作
@@ -97,9 +102,9 @@ def post_logout(request: HttpRequest, **kwargs) -> JsonResponse:
     return create_success_json_res_with({})
 
 
-def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
+def post_register_temp(request: HttpRequest, **kwargs) -> JsonResponse:
     """
-    注册
+    临时不用验证码的注册
 
     :param request: 视图请求
     :type request: HttpRequest
@@ -120,7 +125,7 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
         return JsonResponse(create_error_json_obj(202, '邮箱已占用'), status=400)
     if not isinstance(student_id, int):
         return JsonResponse(create_error_json_obj(205, '学号类型错误'), status=400)
-    # 邮箱验证
+    # 邮箱格式验证
     try:
         validate_email(email)
     except:
@@ -128,6 +133,53 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
     # TODO: 检验密码复杂性
     if password == '':
         return JsonResponse(create_error_json_obj(203, '密码过于简单'), status=400)
+    # 注册新用户
+    u = User.objects.create_user(student_id, password, name, int(datetime.utcnow().timestamp()), email=email, group='borrower')
+    return create_success_json_res_with({"user_id": u.user_id})
+
+
+def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    注册
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
+    student_id: int = request.POST.get('student_id')
+    email: str = request.POST.get('email')
+    password: str = request.POST.get('password')
+    name: str = request.POST.get('name')
+    code: str = request.POST.get('code')
+    if student_id is None or email is None or password is None or name is None or code is None:
+        return JsonResponse(create_error_json_obj(0, '参数错误'), status=400)
+    if User.objects.filter(student_id=student_id).count() != 0:
+        return JsonResponse(create_error_json_obj(201, '学号已占用'), status=400)
+    if User.objects.filter(email=email).count() != 0:
+        return JsonResponse(create_error_json_obj(202, '邮箱已占用'), status=400)
+    if not isinstance(student_id, int):
+        return JsonResponse(create_error_json_obj(205, '学号类型错误'), status=400)
+    # 邮箱格式验证
+    try:
+        validate_email(email)
+    except:
+        return JsonResponse(create_error_json_obj(204, '邮箱格式错误'), status=400)
+    # TODO: 检验密码复杂性
+    if password == '':
+        return JsonResponse(create_error_json_obj(203, '密码过于简单'), status=400)
+    # 邮箱验证码检验
+    codes: QuerySet = ActivateCode.objects.filter(email=email)
+    if codes.count() != 1:
+        return JsonResponse(create_error_json_obj(206, '邮箱验证码错误'), status=400)
+    db_code: ActivateCode = codes.get()
+    if db_code.check_expired() or db_code.code != code:
+        db_code.delete()
+        return JsonResponse(create_error_json_obj(206, '邮箱验证码错误'), status=400)
+    else:
+        db_code.delete()
     # 注册新用户
     u = User.objects.create_user(student_id, password, name, int(datetime.utcnow().timestamp()), email=email, group='borrower')
     return create_success_json_res_with({"user_id": u.user_id})
@@ -165,6 +217,44 @@ def all_not_login(request: HttpRequest, **kwargs) -> JsonResponse:
     :rtype: JsonResponse
     """
     return create_not_login_json_response()
+
+
+def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    发送邮箱验证码
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
+    # TODO
+    email: str = request.POST.get('email')
+    if email is None:
+        return JsonResponse(create_error_json_obj(0, '参数错误'), status=400)
+    # 邮箱格式验证
+    try:
+        validate_email(email)
+    except:
+        return JsonResponse(create_error_json_obj(204, '邮箱格式错误'), status=400)
+    # TODO
+    # 随机生成一个6位的code
+    # 再发到邮箱中
+    # 代码希望放到 ..common.mail 中
+    code: str
+
+    # 存入 ActivateCode 库中
+    codes: QuerySet = ActivateCode.objects.filter(email=email)
+    if codes.count() >= 1:
+        codes.delete()
+    ActivateCode.objects.create(
+        email=email,
+        expired_time=datetime.utcnow() + timedelta(hours=1),
+        code=code
+    )
+    return create_success_json_res_with({})
 
 
 # 用户管理

@@ -4,6 +4,7 @@ from django.urls import path
 
 from .views import user
 from .views import device
+from .views import comment
 
 urlpatterns = [
     # 用户
@@ -28,6 +29,13 @@ urlpatterns = [
              'perms_required': []
          },
          name='post_logout'),
+    # 临时不用邮箱验证的注册
+    path('user/register-temp', user.post_register_temp,
+         {
+             'method': 'POST',
+             'perms_required': []
+         },
+         name='post_register_temp'),
     ## 注册
     path('user/register', user.post_register,
          {
@@ -69,6 +77,28 @@ urlpatterns = [
          },
          name='get_admin_user_id'),
 
+    # 评价、留言
+    ## 获取留言
+    path('device/<int:device_id>/comment_list', comment.get_device_id_comment_list,
+         {
+             'method': "GET",
+             'perms_required': ['can_get_device_id_comment_list'],
+         },
+         name='get_device_id_comment_list'),
+    ## 发布留言
+    path('device/<int:device_id>/comment', comment.post_device_id_comment,
+         {
+             'method': "POST",
+             'perms_required': ['can_post_device_id_comment'],
+         },
+         name='post_device_id_comment'),
+    ## 删除留言
+    path('device/<int:device_id>/comment/<int:comment_id>', comment.delete_device_id_comment_id,
+         {
+             'method': "DELETE",
+             'perms_required': ['can_delete_device_id_comment_id'],
+         },
+         name='delete_device_id_comment_id'),
 
     # 设备
     ## 列出设备
