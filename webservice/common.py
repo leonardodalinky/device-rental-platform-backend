@@ -5,14 +5,16 @@ from typing import Dict, List
 def create_error_json_obj(error_code: int, message: str) -> Dict[str, object]:
     return {
         "error_code": error_code,
-        "message": message
+        "message": message,
+        "success": False
     }
 
 
 def create_not_login_json_response() -> JsonResponse:
     return JsonResponse({
         "error_code": 0,
-        "message": '未登录'
+        "message": '未登录',
+        "success": False
     }, status=401)
 
 

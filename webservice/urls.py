@@ -7,15 +7,17 @@ from .views import user
 urlpatterns = [
     # 用户
     ## 自己用户信息
-    path('user', user.user, name='user'),
+    path('user', user.user, {'method': 'GET'}, name='user'),
     ## 登录
-    path('user/login', user.login, name='login'),
+    path('user/login', user.login, {'method': 'POST'}, name='login'),
     ## 登出
-    path('user/logout', user.logout, name='logout'),
+    path('user/logout', user.logout, {'method': 'POST'}, name='logout'),
     ## 注册
-    path('user/register', user.register, name='register'),
+    path('user/register', user.register, {'method': 'POST'}, name='register'),
     ## 其他用户信息
-    path('user/<int:other_user_id>', user.user_id, name='user__id'),
+    path('user/<int:other_user_id>', user.user_id, {'method': 'GET'}, name='user_id'),
+    ## 未登录时跳转
+    path('user/not_login', user.not_login, {'method': 'ALL'}, name='not_login')
 
     # TODO: 其他
     # 用户管理

@@ -9,17 +9,17 @@ from typing import Dict, List
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, student_id: int, password: str, register_time: int, email: str = None, group: str = 'borrower'):
+    def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str = None, group: str = 'borrower'):
         if not student_id:
             raise ValueError('The student_id must be set')
-        user: User = self.model(student_id=student_id, register_time=register_time, email=email)
+        user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email)
         user.set_password(password)
         user.save()
         user.groups.add(get_group(group))
         return user
 
-    def create_superuser(self, student_id: str, password: str, register_time: int, email: str = None):
-        return self.create_user(student_id, password, register_time, email=email, group='admin')
+    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str = None):
+        return self.create_user(student_id, password, name, register_time, email=email, group='admin')
 
     # class Meta:
     #     app_label = 'webservice'
@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     student_id = models.BigIntegerField(unique=True)
     name = models.CharField(max_length=128)
     register_time = models.BigIntegerField()
-    email = models.EmailField('email address', unique=True)
+    email = models.EmailField('email address', unique=True, null=True)
 
     USERNAME_FIELD = 'student_id'
     EMAIL_FIELD = 'email'
@@ -78,8 +78,10 @@ def get_group(group: str) -> Group:
     :return: None
     :rtype: None
     """
+    print(group)
     if group == 'borrower' or group not in ['admin', 'provider', 'borrower']:
         # borrower
+        print('in borrower')
         try:
             return Group.objects.get(name='borrower')
         except Group.DoesNotExist:
@@ -98,6 +100,7 @@ def get_group(group: str) -> Group:
             return g
     else:
         # admin
+        print('in admin')
         try:
             return Group.objects.get(name='admin')
         except Group.DoesNotExist:

@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+WEBSERVICE_ROOT_URL = 'api/v1/'
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls, name='admin'),
     # 包括 web 服务中的路由表
-    path('', include('webservice.urls'))
+    path(WEBSERVICE_ROOT_URL, include('webservice.urls'))
 ]
