@@ -3,6 +3,7 @@ from django.urls import path
 # TODO: 增加各个 view
 
 from .views import user
+from .views import device
 
 urlpatterns = [
     # 用户
@@ -19,4 +20,8 @@ urlpatterns = [
 
     # TODO: 其他
     # 用户管理
+
+    # 设备
+    ## 列出设备
+    path('device_list', device.device_list, name='device_list')
 ]
