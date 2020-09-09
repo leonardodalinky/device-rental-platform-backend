@@ -32,7 +32,7 @@ class DeviceApply(models.Model):
         :return: dict
         :rtype: Dict
         """
-        handler = {}
+        handler = None
         if self.handler is not None:
             handler = self.handler.toDict()
         return {
