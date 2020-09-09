@@ -46,6 +46,13 @@ urlpatterns = [
              'perms_required': []
          },
          name='post_register'),
+    ## 发送邮箱验证码
+    path('user/mail-verify', user.post_user_mail_verify,
+         {
+             'method': 'POST',
+             'perms_required': []
+         },
+         name='post_user_mail_verify'),
     ## 其他用户信息
     path('user/<int:other_user_id>', user.get_user_id,
          {

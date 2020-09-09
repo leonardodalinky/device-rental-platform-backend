@@ -12,6 +12,7 @@ from django.views import View
 from django.core.validators import validate_email
 
 from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
+from ..common.mail import send_verification_code
 from ..models.user import User, ActivateCode
 
 from datetime import datetime, timedelta
@@ -149,7 +150,7 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
     :return: JsonResponse
     :rtype: JsonResponse
     """
-    student_id: int = request.POST.get('student_id')
+    student_id: str = request.POST.get('student_id')
     email: str = request.POST.get('email')
     password: str = request.POST.get('password')
     name: str = request.POST.get('name')
@@ -160,8 +161,6 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
         return JsonResponse(create_error_json_obj(201, '学号已占用'), status=400)
     if User.objects.filter(email=email).count() != 0:
         return JsonResponse(create_error_json_obj(202, '邮箱已占用'), status=400)
-    if not isinstance(student_id, int):
-        return JsonResponse(create_error_json_obj(205, '学号类型错误'), status=400)
     # 邮箱格式验证
     try:
         validate_email(email)
@@ -239,11 +238,14 @@ def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
         validate_email(email)
     except:
         return JsonResponse(create_error_json_obj(204, '邮箱格式错误'), status=400)
-    # TODO
+
     # 随机生成一个6位的code
     # 再发到邮箱中
     # 代码希望放到 ..common.mail 中
-    code: str
+    try:
+        code: str = send_verification_code(email)
+    except:
+        return JsonResponse(create_error_json_obj(207, '邮件验证码发送失败'), status=400)
 
     # 存入 ActivateCode 库中
     codes: QuerySet = ActivateCode.objects.filter(email=email)
