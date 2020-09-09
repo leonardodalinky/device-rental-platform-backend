@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
+from django.core.validators import validate_email
 
 from typing import Dict, List
 
@@ -12,7 +12,7 @@ class CustomUserManager(BaseUserManager):
     """
     用户管理的自定义 Manager
     """
-    def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str = None, group: str = 'borrower'):
+    def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str, group: str = 'borrower'):
         """
         生成新的用户
 
@@ -33,13 +33,17 @@ class CustomUserManager(BaseUserManager):
         """
         if not student_id:
             raise ValueError('The student_id must be set')
+        try:
+            validate_email(email)
+        except:
+            raise ValueError('Wrong email address')
         user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email)
         user.set_password(password)
         user.save()
         user.groups.add(get_group(group))
         return user
 
-    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str = None):
+    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str):
         """
         生成新的管理员
 
@@ -67,20 +71,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     student_id = models.BigIntegerField(unique=True)
     name = models.CharField(max_length=128)
     register_time = models.BigIntegerField()
-    email = models.EmailField('email address', unique=True, null=True)
+    email = models.EmailField('email address', unique=True)
 
     USERNAME_FIELD = 'student_id'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = [
         'name',
         'register_time',
+        'email'
     ]
 
     objects = CustomUserManager()
-
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_user'
 
     def __str__(self):
         return self.student_id
@@ -101,7 +102,16 @@ class User(AbstractBaseUser, PermissionsMixin):
             "group": self.groups.all().get().name
         }
 
-    def changeGroup(self, new_group: str) -> None:
+    def get_group(self) -> str:
+        """
+        返回权限组的名称
+
+        :return: 权限组名称，分为 'borrower', 'provider' and 'admin'
+        :rtype: str
+        """
+        return self.groups.all().get().name
+
+    def change_group(self, new_group: str) -> None:
         """
         更改用户权限组
 
@@ -135,10 +145,12 @@ perm_borrower = [
     'can_delete_device_id_comment_id',
     # 申请成为设备提供者
     'can_post_apply_become_provider',
-    # 查看自己的申请
+    # 查看自己的成为设备提供者申请
     'can_get_apply_become_provider',
     # 申请借用设备
     'can_post_apply_borrow_device',
+    # 查看借用设备申请
+    'can_get_apply_borrow_device',
     # 归还设备
     'can_post_apply_return_device_device_id',
 ]
@@ -148,14 +160,14 @@ perm_provider.extend([
     'can_patch_device_id',
     # 删除设备
     'can_delete_device_id',
-    # 查看自己可以处理的申请（设备提供者）
-    'can_get_apply_become_provider_list',
-    # 处理设备提供者申请
-    'can_post_apply_become_provider_apply_id',
     # 申请上架设备
     'can_post_apply_new_device',
+    # 查看自己上架申请
+    'can_get_apply_new_device',
     # 处理借用申请
     'can_post_apply_borrow_device_apply_id',
+    # 查看自己可以处理的借用申请（设备管理员）
+    'can_get_apply_borrow_device_list',
 ])
 perm_admin: List = list(perm_provider)
 perm_admin.extend([
@@ -167,10 +179,16 @@ perm_admin.extend([
     'can_delete_user_id',
     # 数据统计
     'can_get_dashboard',
-    # 查看全部的申请（管理员）
+    # 处理申请_成为设备提供者
+    'can_post_apply_become_provider_apply_id',
+    # 查看全部的申请_成为提供者（管理员）
     'can_get_apply_become_provider_admin',
     # 处理上架申请
     'can_post_apply_new_device_apply_id',
+    # 查看全部的申请_上架申请（管理员）
+    'can_get_apply_new_device_admin',
+    # 查看所有的借用申请（管理员）
+    'can_get_apply_borrow_device_admin'
 ])
 
 
