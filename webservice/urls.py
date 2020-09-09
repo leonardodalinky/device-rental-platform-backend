@@ -8,6 +8,7 @@ from .views import comment
 from .views import perm_apply
 from .views import create_apply
 from .views import device_apply
+from .views import log
 
 urlpatterns = [
     # 用户
