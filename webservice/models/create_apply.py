@@ -28,9 +28,9 @@ class CreateApply(models.Model):
         :return: dict
         :rtype: Dict
         """
-        handler = self.handler
-        if handler is not None:
-            handler = handler.toDict()
+        handler = {}
+        if  self.handler is not None:
+            handler = self.handler.toDict()
         return{
             'apply_id': self.apply_id,
             'device_name': self.device_name,
@@ -38,6 +38,6 @@ class CreateApply(models.Model):
             'status': self.status,
             'applicant': self.applicant.toDict(),
             'apply_time': self.apply_time,
-            'handler': self.handler,
+            'handler': handler,
             'handle_time': self.handle_time,
         }
