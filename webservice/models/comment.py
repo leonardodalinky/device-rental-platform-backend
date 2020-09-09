@@ -23,7 +23,7 @@ class Comment(models.Model):
         return {
             'comment_id': self.comment_id,
             'device_id': self.device.device_id,
-            'commenter_id': self.commenter.user_id,
+            'commenter': self.commenter.toDict(),
             'comment_time': self.comment_time,
             'content': self.content,
         }
