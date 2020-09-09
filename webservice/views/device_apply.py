@@ -22,6 +22,10 @@ class ApplyBorrowDevice(View):
         devices = Device.objects.filter(device_id=device_id)
         if devices.count() == 0:
             return JsonResponse(common.create_error_json_obj(400, '该设备不存在'), status=400)
+
+        applications = DeviceApply.objects.filter(applicant=applicant, status=common.PENDING)
+        applications.delete()
+
         device: Device = devices.first()
         if device.borrowed_time is not None:
             return JsonResponse(common.create_error_json_obj(401, '该设备已借出'), status=400)

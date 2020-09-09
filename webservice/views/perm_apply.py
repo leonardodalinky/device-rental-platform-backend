@@ -20,6 +20,9 @@ class ApplyBecomeProvider(View):
         reason = request.POST.get('reason')
         if reason is None:
             return JsonResponse(common.create_error_json_obj(0, '参数错误'))
+        # 清除已有的 pending 申请
+        applications: QuerySet = PermApply.objects.filter(applicant=applicant, status=common.PENDING)
+        applications.delete()
         p: PermApply = PermApply.objects.create(status=common.PENDING,
                                                 applicant=applicant,
                                                 apply_time=int(datetime.utcnow().timestamp()),
