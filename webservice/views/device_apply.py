@@ -3,7 +3,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
 import time
 
-from ..common import create_error_json_obj, create_success_json_res_with
+from ..common.common import create_error_json_obj, create_success_json_res_with
 from ..models.device import Device
 from ..models.user import User
 from ..models.device_apply import DeviceApply
