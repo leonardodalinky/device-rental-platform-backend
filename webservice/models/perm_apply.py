@@ -10,9 +10,9 @@ class PermApply(models.Model):
     models.AutoField(apply_id)
     status = models.IntegerField()
     applicant = models.ForeignKey(User, related_name='PermApply_applicant', on_delete=models.CASCADE)
-    apply_time = models.IntegerField()
+    apply_time = models.BigIntegerField()
     handler = models.ForeignKey(User, related_name='PermApply_handler', on_delete=models.CASCADE, null=True)
-    handle_time = models.IntegerField(null=True)
+    handle_time = models.BigIntegerField(null=True)
     reason = models.TextField()
 
     def toDict(self) -> Dict[str, object]:

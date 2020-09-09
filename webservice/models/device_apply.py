@@ -15,15 +15,15 @@ class DeviceApply(models.Model):
     device_owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='DeviceApply_device_owner'
     )
-    status = models.IntegerField()
+    status = models.BigIntegerField()
     applicant = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='DeviceApply_applicant')
-    apply_time = models.IntegerField()
+    apply_time = models.BigIntegerField()
     handler = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='DeviceApply_handler', null=True)
-    handle_time = models.IntegerField(null=True)
+    handle_time = models.BigIntegerField(null=True)
     reason = models.TextField()
-    return_time = models.IntegerField()
+    return_time = models.BigIntegerField()
 
     def toDict(self) -> Dict[str, object]:
         """
