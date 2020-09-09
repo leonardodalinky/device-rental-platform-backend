@@ -14,25 +14,25 @@ class ApplyBecomeProvider(View):
     """
     申请成为设备申请者和查看自己的申请
     """
+
     def post(self, request: HttpRequest, **kwargs) -> JsonResponse:
         applicant: User = request.user
-        group = request.POST.get('group')
         reason = request.POST.get('reason')
-        if group is None or reason is None:
+        if reason is None:
             return JsonResponse(common.create_error_json_obj(0, '参数错误'))
-        p: PermApply = PermApply.objects.create(group=group,
-                                                status=common.PENDING,
+        p: PermApply = PermApply.objects.create(status=common.PENDING,
                                                 applicant=applicant,
                                                 apply_time=int(datetime.utcnow().timestamp()),
                                                 reason=reason)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
-    def get(self, request: HttpRequest,  **kwargs) -> JsonResponse:
+    def get(self, request: HttpRequest, **kwargs) -> JsonResponse:
         user = request.user
         applications = PermApply.objects.filter(applicant=user)
         if len(applications) == 0:
             return common.create_success_json_res_with({'applications': []})
-        return common.create_success_json_res_with({'applications': list(applications.toDict())})
+        return common.create_success_json_res_with(
+            {'applications': list([application.toDict() for application in applications])})
 
 
 def get_apply_become_provider_admin(request: HttpRequest, **kwargs) -> JsonResponse:
@@ -49,7 +49,7 @@ def get_apply_become_provider_admin(request: HttpRequest, **kwargs) -> JsonRespo
     applications = PermApply.objects.all()
     if len(applications) == 0:
         return common.create_success_json_res_with({'applications': []})
-    return common.create_success_json_res_with({'applications': list(applications.toDict())})
+    return common.create_success_json_res_with({'applications': list([application.toDict() for application in applications])})
 
 
 def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
