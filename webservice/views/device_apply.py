@@ -9,6 +9,9 @@ from ..models.device_apply import DeviceApply
 
 
 class ApplyBorrowDevice(View):
+    """
+    借用设备申请与查看自己的申请
+    """
     def post(self, request: HttpRequest, **kwargs) -> JsonResponse:
         applicant = request.user
         device_id = request.POST.get('device_id')
@@ -42,6 +45,16 @@ class ApplyBorrowDevice(View):
 
 
 def get_apply_borrow_device_admin(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    获取所有租借申请（管理员）
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     applications = DeviceApply.objects.all()
     if applications.count() == 0:
         return common.create_success_json_res_with({'applications': []})
@@ -51,6 +64,16 @@ def get_apply_borrow_device_admin(request: HttpRequest, **kwargs) -> JsonRespons
 
 
 def get_apply_borrow_device_list(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    获取所有能处理的租借申请（设备持有者）
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     applications = DeviceApply.objects.filter(device_owner=request.user)
     if applications.count() == 0:
         return common.create_success_json_res_with({'applications': []})
@@ -60,6 +83,16 @@ def get_apply_borrow_device_list(request: HttpRequest, **kwargs) -> JsonResponse
 
 
 def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
+    """
+    允许租借
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     applications = DeviceApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -80,6 +113,16 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
 
 
 def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
+    """
+    拒绝租借
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     applications = DeviceApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -97,6 +140,16 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
 
 
 def post_apply_return_device(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+    """
+    退还设备
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     devices = Device.objects.filter(device_id=device_id)
     if devices.count() == 0:
         return JsonResponse(common.create_error_json_obj(400, '该设备不存在'), status=400)
