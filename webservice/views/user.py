@@ -173,8 +173,10 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
     if codes.count() != 1:
         return JsonResponse(create_error_json_obj(206, '邮箱验证码错误'), status=400)
     db_code: ActivateCode = codes.get()
-    if db_code.check_expired() or db_code.code != code:
-        db_code.delete()
+    code_expired = db_code.check_expired()
+    if code_expired or db_code.code != code:
+        if code_expired:
+            db_code.delete()
         return JsonResponse(create_error_json_obj(206, '邮箱验证码错误'), status=400)
     else:
         db_code.delete()
