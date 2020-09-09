@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from .mail_settings import *
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -140,14 +141,15 @@ SESSION_SAVE_EVERY_REQUEST = False              # 是否每次请求都保存Ses
 
 AUTH_USER_MODEL = 'webservice.User'
 
-# 邮箱设置
+"""
+发件设置
 
-EMAIL_HOST = 'smtp.163.com'
+EMAIL_HOST = ''
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'drp404notfound@163.com'
-EMAIL_HOST_PASSWORD = 'JYNIRNKKYECYTSER'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_SSL = True
-
+"""
 
 # 日志打印
 LOGGING = {

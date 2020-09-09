@@ -140,3 +140,6 @@ dmypy.json
 cython_debug/
 
 .idea/dbnavigator.xml
+
+# mail server settings
+mail_settings.py
