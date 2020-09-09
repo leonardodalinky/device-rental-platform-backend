@@ -13,6 +13,7 @@ class Device(models.Model):
     created_time = models.BigIntegerField()
     borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='Device_borrower')
     borrowed_time = models.BigIntegerField(null=True)
+    return_time = models.BigIntegerField(null=True)
 
     def toDict(self) -> Dict[str, object]:
         """
@@ -32,4 +33,5 @@ class Device(models.Model):
             "borrowed_time": self.borrowed_time,
             "owner": self.owner.toDict(),
             "created_time": self.created_time,
+            "return_time": self.return_time,
         }

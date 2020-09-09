@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.http import HttpRequest, JsonResponse
 from django.views import View
+from django.db.models.query import QuerySet
 
 from ..common import common
 from ..models.device import Device
@@ -35,7 +36,7 @@ class ApplyBorrowDevice(View):
                                        applicant=applicant,
                                        apply_time=int(datetime.utcnow().timestamp()),
                                        reason=reason,
-                                       return_time=int(datetime.utcnow().timestamp()))
+                                       return_time=return_time)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
@@ -107,11 +108,12 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     application.handler = request.user
     application.handle_time = int(datetime.utcnow().timestamp())
     application.save()
-    device = application.device
+    device: Device = application.device
     if device.borrowed_time is not None:
         return JsonResponse(common.create_error_json_obj(404, '该设备已被租借'), status=400)
     device.borrower = application.applicant
     device.borrowed_time = int(datetime.utcnow().timestamp())
+    device.return_time = application.return_time
     device.save()
     return common.create_success_json_res_with({})
 
@@ -143,7 +145,7 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
     return common.create_success_json_res_with({})
 
 
-def post_apply_return_device(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+def post_apply_return_device(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
     """
     退还设备
 
@@ -164,7 +166,9 @@ def post_apply_return_device(request: HttpRequest, device_id, **kwargs) -> JsonR
         return JsonResponse(common.create_error_json_obj(403, '该设备未被该用户租借'), status=400)
     # TODO
     ## 未按时归还
+    # 设备
     device.borrowed_time = None
     device.borrower = None
+    device.return_time = None
     device.save()
     return common.create_success_json_res_with({})
