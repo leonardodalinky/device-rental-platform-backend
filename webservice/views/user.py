@@ -15,7 +15,7 @@ from ..common.common import create_error_json_obj, create_not_login_json_respons
 from ..common.mail import send_verification_code
 from ..models.user import User, ActivateCode
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Dict, List
 import logging
 
@@ -134,7 +134,7 @@ def post_register_temp(request: HttpRequest, **kwargs) -> JsonResponse:
     if password == '':
         return JsonResponse(create_error_json_obj(203, '密码过于简单'), status=400)
     # 注册新用户
-    u = User.objects.create_user(student_id, password, name, int(datetime.utcnow().timestamp()), email=email, group='borrower')
+    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email, group='borrower')
     return create_success_json_res_with({"user_id": u.user_id})
 
 
@@ -181,7 +181,7 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
     else:
         db_code.delete()
     # 注册新用户
-    u = User.objects.create_user(student_id, password, name, int(datetime.utcnow().timestamp()), email=email, group='borrower')
+    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email, group='borrower')
     return create_success_json_res_with({"user_id": u.user_id})
 
 
@@ -253,7 +253,7 @@ def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
         codes.delete()
     ActivateCode.objects.create(
         email=email,
-        expired_time=datetime.utcnow() + timedelta(hours=1),
+        expired_time=datetime.now() + timedelta(hours=1),
         code=code
     )
     return create_success_json_res_with({})

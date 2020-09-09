@@ -12,7 +12,7 @@ from ..models.comment import Comment
 from ..models.device import Device
 from ..models.user import User
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
@@ -36,7 +36,7 @@ def post_device_id_comment(request: HttpRequest, device_id: int, **kwargs) -> Js
     device: Device = devices.get()
     device.comment_set.create(
         commenter=request.user,
-        comment_time=int(datetime.utcnow().timestamp()),
+        comment_time=int(datetime.now(timezone.utc).timestamp()),
         content=content,
     )
 

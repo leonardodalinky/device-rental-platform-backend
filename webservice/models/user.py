@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import validate_email
 
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # TODO: 数据统计未完善，日志未加入
@@ -270,7 +270,7 @@ class ActivateCode(models.Model):
         :rtype: bool
         """
         # TODO:
-        now_datetime: datetime = datetime.utcnow().replace(tzinfo=None)
-        if now_datetime > self.expired_time.replace(tzinfo=None):
+        now_datetime: datetime = datetime.now().replace(tzinfo=timezone.utc)
+        if now_datetime > self.expired_time.replace(tzinfo=timezone.utc):
             return True
         return False

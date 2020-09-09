@@ -1,7 +1,7 @@
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
-from datetime import datetime
+from datetime import datetime, timezone
 
 from ..common import common
 from ..models.device import Device
@@ -25,7 +25,7 @@ class ApplyBecomeProvider(View):
         applications.delete()
         p: PermApply = PermApply.objects.create(status=common.PENDING,
                                                 applicant=applicant,
-                                                apply_time=int(datetime.utcnow().timestamp()),
+                                                apply_time=int(datetime.now(timezone.utc).timestamp()),
                                                 reason=reason)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
@@ -77,7 +77,7 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     applicant.save()
     application.status = common.APPROVED
     application.handler_id = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     return common.create_success_json_res_with({})
 
@@ -101,6 +101,6 @@ def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id, *
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
     application.handler_id = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     return common.create_success_json_res_with({})

@@ -11,7 +11,7 @@ from ..common.common import create_error_json_obj, create_not_login_json_respons
 from ..models.log import Log
 from ..models.user import User
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def get_log_user_id(request: HttpRequest, user_id: int, **kwargs) -> JsonResponse:

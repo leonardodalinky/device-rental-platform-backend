@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, JsonResponse
@@ -24,7 +24,7 @@ class ApplyNewDevice(View):
                                                     device_description=device_description,
                                                     status=common.PENDING,
                                                     applicant=user,
-                                                    apply_time=int(datetime.utcnow().timestamp()))
+                                                    apply_time=int(datetime.now(timezone.utc).timestamp()))
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
@@ -75,11 +75,11 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.APPROVED
     application.handler = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     Device.objects.create(name=application.device_name,
                           description=application.device_description,
                           owner=application.applicant,
-                          created_time=int(datetime.utcnow().timestamp()))
+                          created_time=int(datetime.now(timezone.utc).timestamp()))
     application.save()
     return common.create_success_json_res_with({})
 
@@ -103,6 +103,6 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
     application.handler = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     return common.create_success_json_res_with({})

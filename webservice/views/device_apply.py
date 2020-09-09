@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from django.http import HttpRequest, JsonResponse
 from django.views import View
@@ -34,7 +34,7 @@ class ApplyBorrowDevice(View):
                                        device_owner=device.owner,
                                        status=common.PENDING,
                                        applicant=applicant,
-                                       apply_time=int(datetime.utcnow().timestamp()),
+                                       apply_time=int(datetime.now(timezone.utc).timestamp()),
                                        reason=reason,
                                        return_time=return_time)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
@@ -106,13 +106,13 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.APPROVED
     application.handler = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     device: Device = application.device
     if device.borrowed_time is not None:
         return JsonResponse(common.create_error_json_obj(404, '该设备已被租借'), status=400)
     device.borrower = application.applicant
-    device.borrowed_time = int(datetime.utcnow().timestamp())
+    device.borrowed_time = int(datetime.now(timezone.utc).timestamp())
     device.return_time = application.return_time
     device.save()
     return common.create_success_json_res_with({})
@@ -137,7 +137,7 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
     application.handler = request.user
-    application.handle_time = int(datetime.utcnow().timestamp())
+    application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     device = application.device
     if device.borrowed_time is not None:

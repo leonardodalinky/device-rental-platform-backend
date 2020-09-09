@@ -16,7 +16,7 @@ from ..models.perm_apply import PermApply
 from ..models.create_apply import CreateApply
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group
 from typing import Dict, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
@@ -34,7 +34,7 @@ def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
         elif group == 'admin':
             admin_count += 1
 
-    now_time: int = int(datetime.utcnow().timestamp())
+    now_time: int = int(datetime.now(timezone.utc).timestamp())
 
     ret = {
         # 平台设备总数

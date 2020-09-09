@@ -1,7 +1,7 @@
 from ..models.user import User
 from ..models.log import Log
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def create_debug_log_now(module: str, user: User, content: str) -> Log:
@@ -99,7 +99,7 @@ def create_log_now(module: str, severity: str, user: User, content: str) -> Log:
     :return: 日志对象
     :rtype: Log
     """
-    return create_log(module, severity, int(datetime.utcnow().timestamp()), user, content)
+    return create_log(module, severity, int(datetime.now(timezone.utc).timestamp()), user, content)
 
 
 def create_log(module: str, severity: str, log_time: int, user: User, content: str) -> Log:
