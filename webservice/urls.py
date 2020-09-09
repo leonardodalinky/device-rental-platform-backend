@@ -247,14 +247,14 @@ urlpatterns = [
          },
          name='get_apply_borrow_device_admin'),
     ## 允许租借
-    path('apply/borrow-deivce/<int:apply_id>/accept', device_apply.post_apply_borrow_device_apply_id_accept,
+    path('apply/borrow-device/<int:apply_id>/accept', device_apply.post_apply_borrow_device_apply_id_accept,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_borrow_device_apply_id']
          },
          name='post_apply_borrow_device_apply_id_accept'),
     ## 拒绝租借
-    path('apply/borrow-deivce/<int:apply_id>/reject', device_apply.post_apply_borrow_device_apply_id_reject,
+    path('apply/borrow-device/<int:apply_id>/reject', device_apply.post_apply_borrow_device_apply_id_reject,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_borrow_device_apply_id']

@@ -27,7 +27,7 @@ class ApplyBecomeProvider(View):
                                                 reason=reason)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
-    def get(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+    def get(self, request: HttpRequest,  **kwargs) -> JsonResponse:
         user = request.user
         applications = PermApply.objects.filter(applicant=user)
         if len(applications) == 0:
