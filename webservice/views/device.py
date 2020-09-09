@@ -41,15 +41,20 @@ def get_device_list(request: HttpRequest, **kwargs) -> JsonResponse:
 
 class DeviceId(View):
     def get(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
-        device = Device.objects.get(device_id=device_id)
-        if len(device) == 0:
+        devices = Device.objects.filter(device_id=device_id)
+        if len(devices) == 0:
             return JsonResponse(create_error_json_obj(403, '设备不存在'), status=400)
+        device: Device = devices.get()
         return create_success_json_res_with({"device": device.toDict()})
 
     def patch(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
-        device = Device.objects.get(device_id=device_id)
-        if len(device) == 0:
+        devices = Device.objects.filter(device_id=device_id)
+        if len(devices) == 0:
             return JsonResponse(create_error_json_obj(403, '设备不存在'), status=400)
+        device: Device = devices.get()
+        user: User = request.user
+        if user.get_group() != 'admin' and device.owner.user_id != user.user_id:
+            return JsonResponse(create_error_json_obj(404, '此设备非你所属'), status=400)
         name = request.POST.get('name', '')
         description = request.POST.get('description', '')
         if name != '':
@@ -60,9 +65,10 @@ class DeviceId(View):
         return create_success_json_res_with({})
 
     def delete(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
-        device = Device.objects.get(device_id=device_id)
-        if len(device) == 0:
-            return JsonResponse(create_error_json_obj(403, 'device not exsit'), status=400)
+        devices = Device.objects.filter(device_id=device_id)
+        if len(devices) == 0:
+            return JsonResponse(create_error_json_obj(403, '设备不存在'), status=400)
+        device: Device = devices.get()
         device.delete()
         return create_success_json_res_with({})
 
