@@ -4,19 +4,15 @@ from django.db import models
 from .user import User
 from typing import Dict, List
 
-class Device(models.Model):
-    device_id = models.IntegerField(primary_key=True, unique=True)
-    models.AutoField(device_id)
-    name = models.CharField(max_length=256)
-    desciption = models.CharField(max_length=2048)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
-    created_time = models.IntegerField()
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='borrower')
-    borrowed_time = models.IntegerField(null=True)
 
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_device'
+class Device(models.Model):
+    device_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=256)
+    description = models.TextField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='device_owner')
+    created_time = models.BigIntegerField()
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='device_borrower')
+    borrowed_time = models.BigIntegerField(null=True)
 
     def toDict(self) -> Dict[str, object]:
         """
@@ -31,7 +27,7 @@ class Device(models.Model):
         return {
             "device_id": self.device_id,
             "name": self.name,
-            "description": self.desciption,
+            "description": self.description,
             "borrower": borrower,
             "borrowed_time": self.borrowed_time,
             "owner": self.owner.toDict(),

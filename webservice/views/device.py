@@ -56,7 +56,7 @@ def patch_device_id(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
     if description != '':
         device.description = description
     device.save()
-    return create_success_json_res_with()
+    return create_success_json_res_with({})
 
 
 def delete_device_id(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
@@ -64,4 +64,4 @@ def delete_device_id(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
     if len(device) == 0:
         return JsonResponse(create_error_json_obj(403, 'device not exsit'), status=400)
     device.delete()
-    return create_success_json_res_with()
+    return create_success_json_res_with({})
