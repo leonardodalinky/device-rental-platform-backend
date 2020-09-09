@@ -255,7 +255,7 @@ class ActivateCode(models.Model):
     """
     code_id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True)
-    expired_time = models.DateTimeField()
+    expired_time: datetime = models.DateTimeField()
     code = models.CharField(max_length=8)
 
     def __str__(self):
@@ -268,7 +268,7 @@ class ActivateCode(models.Model):
         :rtype: bool
         """
         # TODO:
-        now_datetime: datetime = datetime.utcnow()
-        if now_datetime > self.expired_time:
+        now_datetime: datetime = datetime.utcnow().replace(tzinfo=None)
+        if now_datetime > self.expired_time.replace(tzinfo=None):
             return True
         return False

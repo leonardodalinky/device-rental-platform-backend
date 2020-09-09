@@ -10,7 +10,7 @@ class WebserviceConfig(AppConfig):
     name = 'webservice'
 
 
-Not_Login_Required = ['post_login', 'all_not_login', 'post_register', 'post_logout']
+Not_Login_Required = ['post_login', 'all_not_login', 'post_register', 'post_logout', 'post_user_mail_verify', 'register-temp']
 
 
 class LoginRequireMiddleware:
