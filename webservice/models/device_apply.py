@@ -1,9 +1,10 @@
+from typing import Dict
+
 from django.db import models
 
 # Create your models here.
 from .device import Device
 from .user import User
-from typing import Dict, List
 
 
 class DeviceApply(models.Model):
@@ -31,16 +32,16 @@ class DeviceApply(models.Model):
         :return: dict
         :rtype: Dict
         """
-        handler = self.handler
-        if handler is not None:
-            handler = handler.toDict()
-        return{
+        handler = {}
+        if self.handler is not None:
+            handler = self.handler.toDict()
+        return {
             'apply_id': self.apply_id,
             'device': self.device.toDict(),
             'status': self.status,
             'applicant': self.applicant.toDict(),
             'apply_time': self.apply_time,
-            'handler': self.handler,
+            'handler': handler,
             'handle_time': self.handle_time,
             'reason': self.reason,
             'return_time': self.return_time

@@ -1,10 +1,11 @@
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.views import View
 from datetime import datetime
 
-from django.db.models.query import QuerySet
-from django.http import HttpRequest, JsonResponse
-from django.views import View
-
 from ..common import common
+from ..models.device import Device
+from ..models.user import User
 from ..models.perm_apply import PermApply
 from ..models.user import User
 
@@ -42,8 +43,8 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     applications: QuerySet = PermApply.objects.filter(apply_id=apply_id)
     if len(applications) == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
-    application: PermApply = applications.get()
-    if application.status != 0:
+    application: PermApply = applications.first()
+    if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     applicant: User = application.applicant
     applicant.change_group('provider')
@@ -57,10 +58,10 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
 
 def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
     applications: QuerySet = PermApply.objects.filter(apply_id=apply_id)
-    if len(applications) == 0:
+    if len(applications) != 1:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
-    application: PermApply = applications.get()
-    if application.status != 0:
+    application: PermApply = applications.first()
+    if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
     application.handler_id = request.user
