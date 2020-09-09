@@ -13,7 +13,7 @@ def get_device_list(request: HttpRequest, **kwargs) -> JsonResponse :
         devices = Device.objects.all()
     else:
         _user = User.objects.get(user_id=user_id)
-        devices = Device.objects.filter(owner_id=_user)
+        devices = Device.objects.filter(owner=_user)
     if len(devices) == 0:
         return create_success_json_res_with({"devices": []})
     return create_success_json_res_with({"devices": list([device.toDict() for device in devices])})
@@ -21,18 +21,18 @@ def get_device_list(request: HttpRequest, **kwargs) -> JsonResponse :
 def get_device_id(request: HttpRequest, device_id, **kwargs) -> JsonResponse :
     device = Device.objects.get(device_id=device_id)
     if len(device) == 0:
-        return create_error_json_obj(400,'device not exsit')
+        return create_error_json_obj(400,'设备不存在')
     return create_success_json_res_with({"device":device.toDict()})
 
 
 class DeviceId(View):
-    def get(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+    def get(self, request: HttpRequest, device_id, *args, **kwargs) -> JsonResponse:
         device = Device.objects.get(device_id=device_id)
         if len(device) == 0:
             return create_error_json_obj(400, '设备不存在')
         return create_success_json_res_with({"device": device.toDict()})
 
-    def patch(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+    def patch(self, request: HttpRequest, device_id, *args, **kwargs) -> JsonResponse:
         device = Device.objects.get(device_id=device_id)
         if len(device) == 0:
             return create_error_json_obj(400, '设备不存在')
@@ -45,7 +45,7 @@ class DeviceId(View):
         device.save()
         return create_success_json_res_with()
 
-    def delete(self, request: HttpRequest, device_id, **kwargs) -> JsonResponse:
+    def delete(self, request: HttpRequest, device_id, *args, **kwargs) -> JsonResponse:
         device = Device.objects.get(device_id=device_id)
         if len(device) == 0:
             return create_error_json_obj(400, '设备不存在')

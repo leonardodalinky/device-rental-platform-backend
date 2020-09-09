@@ -4,16 +4,19 @@ from django.db import models
 from .user import User
 from typing import Dict, List
 
+
 class Device(models.Model):
-    device_id=models.IntegerField(primary_key=True, unique=True)
+    device_id = models.IntegerField(primary_key=True, unique=True)
     models.AutoField(device_id)
-    name=models.CharField(max_length=256)
-    desciption=models.CharField(max_length=2048)
-    owner_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner_id')
-    created_time=models.IntegerField()
-    borrower_id=models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='orrower_id')
-    borrowed_time=models.IntegerField(null=True)
-    return_time=models.IntegerField(null=True)
+    name = models.CharField(max_length=256)
+    desciption = models.CharField(max_length=2048)
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='owner')
+    created_time = models.IntegerField()
+    borrower = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, related_name='orrower')
+    borrowed_time = models.IntegerField(null=True)
+    return_time = models.IntegerField(null=True)
 
     # class Meta:
     #     app_label = 'webservice'
@@ -26,7 +29,7 @@ class Device(models.Model):
         :return: dict
         :rtype: Dict
         """
-        borrower = self.borrower_id
+        borrower = self.borrower
         if borrower is not None:
             borrower = borrower.toDict()
         return {
@@ -35,6 +38,6 @@ class Device(models.Model):
             "description": self.desciption,
             "borrower": borrower,
             "borrowed_time": self.borrowed_time,
-            "owner": self.owner_id.toDict(),
+            "owner": self.owner.toDict(),
             "created_time": self.created_time,
         }
