@@ -9,9 +9,9 @@ class Device(models.Model):
     device_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256)
     description = models.TextField()
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='device_owner')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Device_owner')
     created_time = models.BigIntegerField()
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='device_borrower')
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='Device_borrower')
     borrowed_time = models.BigIntegerField(null=True)
 
     def toDict(self) -> Dict[str, object]:

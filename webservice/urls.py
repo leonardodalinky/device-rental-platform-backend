@@ -129,6 +129,13 @@ urlpatterns = [
          name='get_log_user_id'),
 
     # 设备
+    ## 列出借用的设备
+    path('borrowed-device/<int:user_id>', device.get_borrowed_device_userid,
+         {
+             'method': 'GET',
+             'perms_required': ['can_get_borrowed_device_userid']
+         },
+         name='get_borrowed_device_userid'),
     ## 列出设备
     path('device_list', device.get_device_list,
          {

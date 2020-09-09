@@ -65,3 +65,17 @@ class DeviceId(View):
             return JsonResponse(create_error_json_obj(403, 'device not exsit'), status=400)
         device.delete()
         return create_success_json_res_with({})
+
+
+def get_borrowed_device_userid(request: HttpRequest, user_id: int, **kwargs) -> JsonResponse:
+    users: QuerySet = User.objects.filter(user_id=user_id)
+    if users.count() != 1:
+        return JsonResponse(create_error_json_obj(501, '无此用户'), status=400)
+    user: User = users.get()
+    devices = user.Device_borrower_set.all()
+    devices_json_list = list(map(lambda x: x.toDict(), devices))
+    return create_success_json_res_with({
+        "user_id": user_id,
+        "devices": devices_json_list,
+    })
+

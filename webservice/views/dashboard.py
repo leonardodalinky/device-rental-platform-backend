@@ -15,5 +15,5 @@ from typing import Dict, List
 from datetime import datetime
 
 
-def dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
+def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
     return JsonResponse(common.create_error_json_obj(1, '尚未实现'), status=400)

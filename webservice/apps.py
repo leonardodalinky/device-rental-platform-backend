@@ -3,8 +3,6 @@ from django.urls import resolve, reverse
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 
 from .common.common import create_error_json_obj
-from .common import logger
-from .models.user import User
 
 from typing import Dict, List
 
@@ -130,6 +128,9 @@ class UserLogMiddleware:
 
         # Code to be executed for each request/response after
         # the view is called.
+        from .common import logger
+        from .models.user import User
+
         user: User = request.user
         if user.is_authenticated:
             r = resolve(request.path)
