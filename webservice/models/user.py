@@ -43,6 +43,8 @@ perm_borrower = [
     'can_get_apply_borrow_device',
     # 归还设备
     'can_post_apply_return_device_device_id',
+    # 查看操作记录
+    'can_get_log_user_id',
 ]
 perm_provider: List = list(perm_borrower)
 perm_provider.extend([

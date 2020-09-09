@@ -5,6 +5,7 @@ from django.urls import path
 from .views import user
 from .views import device
 from .views import comment
+from .views import log
 
 urlpatterns = [
     # 用户
@@ -106,6 +107,16 @@ urlpatterns = [
              'perms_required': ['can_delete_device_id_comment_id'],
          },
          name='delete_device_id_comment_id'),
+
+    # 后台管理
+    ## TODO: 数据统计
+    ## 用户级日志
+    path('log/<int:user_id>', log.get_log_user_id,
+         {
+             'method': "GET",
+             'perms_required': ['can_get_log_user_id'],
+         },
+         name='get_log_user_id'),
 
     # 设备
     ## 列出设备
