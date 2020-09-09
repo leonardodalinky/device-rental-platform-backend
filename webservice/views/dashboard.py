@@ -7,7 +7,7 @@ from django.http import HttpRequest, JsonResponse
 from django.db.models.query import QuerySet
 from django.views import View
 
-from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
+from ..common import common
 from ..models.comment import Comment
 from ..models.device import Device
 from ..models.user import User
@@ -16,4 +16,4 @@ from datetime import datetime
 
 
 def dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
-    pass
+    return JsonResponse(common.create_error_json_obj(1, '尚未实现'), status=400)

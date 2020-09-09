@@ -135,7 +135,7 @@ urlpatterns = [
              'method': 'GET',
              'perms_required': ['can_get_device_list']
          },
-         name='device_list'),
+         name='get_device_list'),
     ## 设备详情与设备管理
     path('device/<int:device_id>', device.DeviceId.as_view(),
          {
@@ -146,7 +146,7 @@ urlpatterns = [
                  'DELETE': ['can_delete_device_id']
              }
          },
-         name='device_device_id'),
+         name='device_id'),
 
     # 权限申请
     ## 申请成为设备拥有者与查看自己的申请
@@ -165,21 +165,21 @@ urlpatterns = [
              'method': 'GET',
              'perm_required': ['can_get_apply_become_provider_admin']
          },
-         name='apply_become_provider_admin'),
+         name='get_apply_become_provider_admin'),
     ## 允许成为设备拥有者
     path('apply/become-provider/<int:apply_id>/accept', perm_apply.post_apply_become_provider_apply_id_accept,
          {
              'method': 'POST',
              'perm_required': ['can_post_apply_become_provider_apply_id']
          },
-         name='apply_become_provider_apply_id_accept'),
+         name='post_apply_become_provider_apply_id_accept'),
     ## 拒绝成为设备拥有者
     path('apply/become-provider/<int:apply_id>/reject', perm_apply.post_apply_become_provider_apply_id_reject,
          {
              'method': 'POST',
              'perm_required': ['can_post_apply_become_provider_apply_id']
          },
-         name='apply_become_provider_apply_id_reject'),
+         name='post_apply_become_provider_apply_id_reject'),
 
     # 上架申请
     ## 申请上架设备与查看自己的申请
@@ -205,18 +205,18 @@ urlpatterns = [
              'method': 'POST',
              'perms_required': ['can_post_apply_new_device_apply_id']
          },
-         name='apply_new_device_apply_id_accept'),
+         name='post_apply_new_device_apply_id_accept'),
     ## 拒绝上架设备
     path('apply/new-device/<int:apply_id>/reject', create_apply.post_apply_new_device_apply_id_reject,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_new_device_apply_id']
          },
-         name='apply_new_device_apply_id_reject'),
+         name='post_apply_new_device_apply_id_reject'),
 
     # 租借设备申请
     ## 申请租借设备与查看自己的申请
-    path('apply/borrow-device', device_apply.apply_borrow_device.as_view(),
+    path('apply/borrow-device', device_apply.ApplyBorrowDevice.as_view(),
          {
              'method': ['POST', 'GET'],
              'perms_required': {
@@ -231,33 +231,33 @@ urlpatterns = [
              'method': 'GET',
              'perms_required': ['can_get_apply_borrow_device_list']
          },
-         name='apply_borrow_device_list'),
+         name='get_apply_borrow_device_list'),
     ## 查看全部租借申请（管理员）
     path('apply/borrow-device/admin', device_apply.get_apply_borrow_device_admin,
          {
              'method': 'GET',
              'perms_required': ['can_get_apply_borrow_device_admin']
          },
-         name='apply_borrow_device_admin'),
+         name='get_apply_borrow_device_admin'),
     ## 允许租借
     path('apply/borrow-deivce/<int:apply_id>/accept', device_apply.post_apply_borrow_device_apply_id_accept,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_borrow_device_apply_id']
          },
-         name='apply_borrow_device_apply_id_accept'),
+         name='post_apply_borrow_device_apply_id_accept'),
     ## 拒绝租借
     path('apply/borrow-deivce/<int:apply_id>/reject', device_apply.post_apply_borrow_device_apply_id_reject,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_borrow_device_apply_id']
          },
-         name='apply_borrow_device_apply_id_reject'),
+         name='post_apply_borrow_device_apply_id_reject'),
     ## 归还设备
     path('apply/return-device/<int:device_id>', device_apply.post_apply_return_device,
          {
              'method': 'POST',
              'perms_required': ['can_post_apply_return_device_device_id']
          },
-         name='apply_return_device')
+         name='post_apply_return_device')
 ]

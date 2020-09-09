@@ -1,7 +1,10 @@
 from django.apps import AppConfig
 from django.urls import resolve, reverse
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+
 from .common.common import create_error_json_obj
+from .common import logger
+from .models.user import User
 
 from typing import Dict, List
 
@@ -110,3 +113,30 @@ class PermissionValidateMiddleware:
                     return JsonResponse(create_error_json_obj(403, '权限错误'), status=403)
         else:
             raise ValueError('参数类型错误')
+
+
+class UserLogMiddleware:
+    """
+    用户级日志的中间件
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response: JsonResponse = self.get_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
+        user: User = request.user
+        if user.is_authenticated:
+            r = resolve(request.path)
+            url_name: str = r.url_name
+            if response.status_code == 200:
+                logger.create_info_log_now(r, user, '成功')
+            else:
+                logger.create_error_log_now(r, user, '失败')
+
+        return response
