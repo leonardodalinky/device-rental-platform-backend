@@ -105,7 +105,6 @@ class PermissionValidateMiddleware:
         elif isinstance(perms, dict):
             # 方法字典形式
             ps = perms.get(request.method, [])
-            print(request.user.get_group_permissions())
             for p in ps:
                 if not request.user.has_perm('webservice.' + p):
                     return JsonResponse(create_error_json_obj(403, '权限错误'), status=403)
