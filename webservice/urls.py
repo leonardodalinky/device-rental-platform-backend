@@ -5,6 +5,9 @@ from django.urls import path
 from .views import user
 from .views import device
 from .views import comment
+from .views import perm_apply
+from .views import create_apply
+from .views import device_apply
 
 urlpatterns = [
     # 用户
@@ -120,14 +123,57 @@ urlpatterns = [
         }, 
         name='device_device_id'),
     
-    #上架申请
-    ##申请上架设备
-    path('apply/new-device', create_apply.post_apply_new_device,
+    #权限申请
+    ##申请成为设备拥有者与查看自己的申请
+    path('apply/become-provider', perm_apply.apply_become_provider,
+        {
+            'method': ['POST', 'GET'],
+            'perms_required':{
+                'POST': ['can_post_apply_become_provider'],
+                'GET': ['can_get_apply_become_provider']
+            }
+        },
+        name='apply_become_provider'),
+    ##查看全部的权限申请（管理员）
+    path('apply/become-provider/admin',perm_apply.get_apply_become_provider_admin,
+        {
+            'method': 'GET',
+            'perm_required': ['can_get_apply_become_provider_admin']
+        },
+        name='apply_become_provider_admin'),
+    ##允许成为设备拥有者
+    path('apply/become-provider/<int :apply_id>/accept',perm_apply.post_apply_become_provider_apply_id_accept,
         {
             'method': 'POST',
-            'perms_required': ['can_post_apply_new_device']
+            'perm_required': ['can_post_apply_become_provider_apply_id']
+        },
+        name='apply_become_provider_apply_id_accept'),
+    ##拒绝成为设备拥有者
+    path('apply/become-provider/<int :apply_id>/reject',perm_apply.post_apply_become_provider_apply_id_reject,
+        {
+            'method': 'POST',
+            'perm_required': ['can_post_apply_become_provider_apply_id']
+        },
+        name='apply_become_provider_apply_id_reject'),
+
+    #上架申请
+    ##申请上架设备与查看自己的申请
+    path('apply/new-device', create_apply.apply_new_device,
+        {
+            'method': ['POST','GET'],
+            'perms_required':{
+                'POST': ['can_post_apply_new_device'],
+                'GET': ['can_get_apply_new_device']
+            } 
         },
         name='apply_new_device'),
+    #查看所有的上架申请（管理员）
+    path('apply/new-device/admin',create_apply.get_apply_new_device_admin,
+        {
+            'method': 'GET',
+            'perms_required': ['can_get_apply_new_device_admin']
+        },
+        name='get_apply_new_device_admin'),
     ##允许上架设备
     path('apply/new-device/<int:apply_id>/accept', create_apply.post_apply_new_device_apply_id_accept,
         {
@@ -142,4 +188,7 @@ urlpatterns = [
             'perms_required': ['can_post_apply_new_device_apply_id']
         },
         name='apply_new_device_apply_id_reject')
+    
+    #租借设备申请
+    ##
 ]
