@@ -7,7 +7,6 @@ from typing import Dict, List
 class PermApply(models.Model):
     apply_id = models.IntegerField(primary_key=True)
     models.AutoField(apply_id)
-    group = models.CharField(max_length=256)
     status = models.IntegerField()
     applicant = models.ForeignKey(User, related_name='PermApply_applicant', on_delete=models.CASCADE)
     apply_time = models.IntegerField()
@@ -31,7 +30,6 @@ class PermApply(models.Model):
             handler = handler.toDict()
         return{
             'apply_id': self.apply_id,
-            'group': self.groups.all().get().name,
             'status': self.status,
             'applicant': self.applicant.toDict(),
             'apply_time': self.apply_time,

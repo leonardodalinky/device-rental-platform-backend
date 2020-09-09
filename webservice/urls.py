@@ -132,7 +132,7 @@ urlpatterns = [
     
     #权限申请
     ##申请成为设备拥有者与查看自己的申请
-    path('apply/become-provider', perm_apply.apply_become_provider,
+    path('apply/become-provider', perm_apply.apply_become_provider.as_view(),
         {
             'method': ['POST', 'GET'],
             'perms_required':{
@@ -156,7 +156,7 @@ urlpatterns = [
         },
         name='apply_become_provider_apply_id_accept'),
     ##拒绝成为设备拥有者
-    path('apply/become-provider/<int :apply_id>/reject',perm_apply.post_apply_become_provider_apply_id_reject,
+    path('apply/become-provider/<int:apply_id>/reject',perm_apply.post_apply_become_provider_apply_id_reject,
         {
             'method': 'POST',
             'perm_required': ['can_post_apply_become_provider_apply_id']
@@ -165,7 +165,7 @@ urlpatterns = [
 
     #上架申请
     ##申请上架设备与查看自己的申请
-    path('apply/new-device', create_apply.apply_new_device,
+    path('apply/new-device', create_apply.apply_new_device.as_view(),
         {
             'method': ['POST','GET'],
             'perms_required':{
@@ -198,7 +198,7 @@ urlpatterns = [
     
     #租借设备申请
     ##申请租借设备与查看自己的申请
-    path('apply/borrow-device',device_apply.apply_borrow_device,
+    path('apply/borrow-device',device_apply.apply_borrow_device.as_view(),
         {
             'method': ['POST','GET'],
             'perms_required':{
@@ -236,7 +236,7 @@ urlpatterns = [
         },
         name='apply_borrow_device_apply_id_reject'), 
     ##归还设备
-    path('/apply/return-device/<int:device_id>',device_apply.post_apply_return_device,
+    path('apply/return-device/<int:device_id>',device_apply.post_apply_return_device,
         {
             'method': 'POST',
             'perms_required': ['can_post_apply_return_device_device_id']

@@ -9,7 +9,7 @@ class Device(models.Model):
     device_id = models.IntegerField(primary_key=True, unique=True)
     models.AutoField(device_id)
     name = models.CharField(max_length=256)
-    desciption = models.CharField(max_length=2048)
+    description = models.CharField(max_length=2048)
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='owner')
     created_time = models.IntegerField()
@@ -35,7 +35,7 @@ class Device(models.Model):
         return {
             "device_id": self.device_id,
             "name": self.name,
-            "description": self.desciption,
+            "description": self.description,
             "borrower": borrower,
             "borrowed_time": self.borrowed_time,
             "owner": self.owner.toDict(),

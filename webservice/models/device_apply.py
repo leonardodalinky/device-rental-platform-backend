@@ -11,6 +11,9 @@ class DeviceApply(models.Model):
     models.AutoField(apply_id)
     device = models.ForeignKey(
         Device, on_delete=models.CASCADE, related_name='DeviceApply_device')
+    device_owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='DeviceApply_device_owner'
+    )
     status = models.IntegerField()
     applicant = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='DeviceApply_applicant')

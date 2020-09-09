@@ -9,7 +9,7 @@ class CreateApply(models.Model):
     apply_id = models.IntegerField(primary_key=True)
     models.AutoField(apply_id)
     device_name = models.CharField(max_length=256)
-    device_desciption = models.CharField(max_length=2048)
+    device_description = models.CharField(max_length=2048)
     status = models.IntegerField()
     applicant = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='CreateApply_applicant')
@@ -35,7 +35,7 @@ class CreateApply(models.Model):
         return{
             'apply_id': self.apply_id,
             'device_name': self.device_name,
-            'device_description': self.device_desciption,
+            'device_description': self.device_description,
             'status': self.status,
             'applicant': self.applicant.toDict(),
             'apply_time': self.apply_time,
