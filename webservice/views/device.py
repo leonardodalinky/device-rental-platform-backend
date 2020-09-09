@@ -7,13 +7,22 @@ from ..models.user import User
 from django.views import View
 
 
-def get_device_list(request: HttpRequest, **kwargs) -> JsonResponse:
-    user_id = request.GET.get('userId')
-    _user = User.objects.get(user_id=user_id)
-    devices = Device.objects.filter(owner_id=_user)
+def get_device_list(request: HttpRequest, **kwargs) -> JsonResponse :
+    user_id = request.GET.get('user_id')
+    if user_id is None:
+        devices = Device.objects.all()
+    else:
+        _user = User.objects.get(user_id=user_id)
+        devices = Device.objects.filter(owner_id=_user)
     if len(devices) == 0:
         return create_success_json_res_with({"devices": []})
-    return create_success_json_res_with({"devices": list[devices.toDict()]})
+    return create_success_json_res_with({"devices": list([device.toDict() for device in devices])})
+
+def get_device_id(request: HttpRequest, device_id, **kwargs) -> JsonResponse :
+    device = Device.objects.get(device_id=device_id)
+    if len(device) == 0:
+        return create_error_json_obj(400,'device not exsit')
+    return create_success_json_res_with({"device":device.toDict()})
 
 
 class DeviceId(View):
