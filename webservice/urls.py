@@ -110,6 +110,16 @@ urlpatterns = [
          },
          name='delete_device_id_comment_id'),
 
+    # 后台管理
+    ## TODO: 数据统计
+    ## 用户级日志
+    path('log/<int:user_id>', log.get_log_user_id,
+         {
+             'method': "GET",
+             'perms_required': ['can_get_log_user_id'],
+         },
+         name='get_log_user_id'),
+
     # 设备
     ## 列出设备
     path('device_list', device.get_device_list, 

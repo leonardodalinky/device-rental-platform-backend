@@ -9,14 +9,11 @@ class Device(models.Model):
     device_id = models.IntegerField(primary_key=True, unique=True)
     models.AutoField(device_id)
     name = models.CharField(max_length=256)
-    description = models.CharField(max_length=2048)
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='owner')
+    desciption = models.CharField(max_length=2048)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
     created_time = models.IntegerField()
-    borrower = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, related_name='orrower')
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='borrower')
     borrowed_time = models.IntegerField(null=True)
-    return_time = models.IntegerField(null=True)
 
     # class Meta:
     #     app_label = 'webservice'

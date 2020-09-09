@@ -16,7 +16,7 @@ from datetime import datetime
 
 
 def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
-    devices: QuerySet = Device.objects.filter(device_id=device_id)
+    devices: QuerySet = Device.objects.filter(device__device_id=device_id)
     if devices.count() != 1:
         return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
     device: Device = devices.get()
@@ -27,7 +27,7 @@ def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -
 
 
 def post_device_id_comment(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
-    devices: QuerySet = Device.objects.filter(device_id=device_id)
+    devices: QuerySet = Device.objects.filter(device__device_id=device_id)
     if devices.count() != 1:
         return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
     content: str = request.POST.get('content', None)
@@ -46,10 +46,10 @@ def delete_device_id_comment_id(request: HttpRequest, device_id: int, comment_id
     comments: QuerySet
     if _user.get_group() == 'borrower':
         # 租借者
-        comments = _user.comment_set.filter(device_id=device_id)
+        comments = _user.comment_set.filter(device__device_id=device_id)
     else:
         # 平台管理员等
-        devices: QuerySet = Device.objects.filter(device_id=device_id)
+        devices: QuerySet = Device.objects.filter(device__device_id=device_id)
         if devices.count() != 1:
             return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
         device: Device = devices.get()
