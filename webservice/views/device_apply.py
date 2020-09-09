@@ -15,79 +15,90 @@ class ApplyBorrowDevice(View):
         reason = request.POST.get('reason')
         return_time = request.POST.get('return_time')
         if device_id is None or reason is None or return_time is None:
-            return JsonResponse(common.create_error_json_obj(0, '参数错误'), status=400)
+            return JsonResponse(common.create_error_json_obj(0, '参数错误'))
         devices = Device.objects.filter(device_id=device_id)
-        if len(devices) == 0:
+        if devices.count() == 0:
             return JsonResponse(common.create_error_json_obj(400, '该设备不存在'), status=400)
         device: Device = devices.first()
         if device.borrowed_time is not None:
             return JsonResponse(common.create_error_json_obj(401, '该设备已借出'), status=400)
-        p = DeviceApply.objects.create(device_id=device_id,
-                                       device_owner=device.owner_id,
-                                       status=0,
+        p = DeviceApply.objects.create(device=device,
+                                       device_owner=device.owner,
+                                       status=common.PENDING,
                                        applicant=applicant,
                                        apply_time=int(datetime.utcnow().timestamp()),
                                        reason=reason,
-                                       return_time=return_time)
+                                       return_time=int(datetime.utcnow().timestamp()))
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
-    def get(self, request: HttpRequest, **kwargs) -> JsonResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         user = request.user
         applications = DeviceApply.objects.filter(applicant=user)
-        if len(applications) == 0:
+        if applications.count() == 0:
             return common.create_success_json_res_with({'applications': []})
-        return common.create_success_json_res_with({'applications': list(applications.toDict())})
+        applications_list = list(applications)
+        applications_json_list = list(map(lambda application: application.toDict(), applications_list))
+        return common.create_success_json_res_with({'applications': applications_json_list})
 
 
 def get_apply_borrow_device_admin(request: HttpRequest, **kwargs) -> JsonResponse:
     applications = DeviceApply.objects.all()
-    if len(applications) == 0:
+    if applications.count() == 0:
         return common.create_success_json_res_with({'applications': []})
-    return common.create_success_json_res_with({'applications': list(applications.toDict())})
+    applications_list = list(applications)
+    applications_json_list = list(map(lambda application: application.toDict(), applications_list))
+    return common.create_success_json_res_with({'applications': applications_json_list})
 
 
 def get_apply_borrow_device_list(request: HttpRequest, **kwargs) -> JsonResponse:
-    applications = DeviceApply.filter(device_owner=request.user)
-    if len(applications) == 0:
+    applications = DeviceApply.objects.filter(device_owner=request.user)
+    if applications.count() == 0:
         return common.create_success_json_res_with({'applications': []})
-    return common.create_success_json_res_with({'applications': list(applications.toDict())})
+    applications_list = list(applications)
+    applications_json_list = list(map(lambda application: application.toDict(), applications_list))
+    return common.create_success_json_res_with({'applications': applications_json_list})
 
 
 def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
     applications = DeviceApply.objects.filter(apply_id=apply_id)
-    if len(applications) == 0:
+    if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
     application: DeviceApply = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
-    device: Device = application.device
-    device.borrower = application.applicant
-    device.borrowed_time = int(datetime.utcnow().timestamp())
-    device.save()
     application.status = common.APPROVED
     application.handler = request.user
     application.handle_time = int(datetime.utcnow().timestamp())
     application.save()
+    device = application.device
+    if device.borrowed_time is not None:
+        return JsonResponse(common.create_error_json_obj(404, '该设备已被租借'), status=400)
+    device.borrower = application.applicant
+    device.borrowed_time = int(datetime.utcnow().timestamp())
+    device.save()
     return common.create_success_json_res_with({})
 
 
 def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
     applications = DeviceApply.objects.filter(apply_id=apply_id)
-    if len(applications) == 0:
+    if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
     application: DeviceApply = applications.first()
-    if application.status != 0:
+    if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
     application.handler = request.user
     application.handle_time = int(datetime.utcnow().timestamp())
     application.save()
+    device = application.device
+    if device.borrowed_time is not None:
+        return JsonResponse(common.create_error_json_obj(404, '该设备已被租借'), status=400)
     return common.create_success_json_res_with({})
 
 
 def post_apply_return_device(request: HttpRequest, device_id, **kwargs) -> JsonResponse:
-    devices = Device.objects.filter(device_id)
-    if len(devices) == 0:
+    devices = Device.objects.filter(device_id=device_id)
+    if devices.count() == 0:
         return JsonResponse(common.create_error_json_obj(400, '该设备不存在'), status=400)
     device: Device = devices.first()
     if device.borrowed_time is None:
