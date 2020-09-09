@@ -6,17 +6,16 @@ from typing import Dict, List
 
 
 class CreateApply(models.Model):
-    apply_id = models.IntegerField(primary_key=True)
-    models.AutoField(apply_id)
+    apply_id = models.AutoField(primary_key=True)
     device_name = models.CharField(max_length=256)
-    device_description = models.CharField(max_length=2048)
+    device_description = models.TextField()
     status = models.IntegerField()
     applicant = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='CreateApply_applicant')
-    apply_time = models.IntegerField()
+    apply_time = models.BigIntegerField()
     handler = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='CreateApply_handler', null=True)
-    handle_time = models.IntegerField(null=True)
+    handle_time = models.BigIntegerField(null=True)
 
     # class Meta:
     #     app_label = 'webservice'

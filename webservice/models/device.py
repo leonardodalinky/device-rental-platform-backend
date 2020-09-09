@@ -6,18 +6,13 @@ from typing import Dict, List
 
 
 class Device(models.Model):
-    device_id = models.IntegerField(primary_key=True, unique=True)
-    models.AutoField(device_id)
+    device_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=256)
-    desciption = models.CharField(max_length=2048)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
-    created_time = models.IntegerField()
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='borrower')
-    borrowed_time = models.IntegerField(null=True)
-
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_device'
+    description = models.TextField()
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='device_owner')
+    created_time = models.BigIntegerField()
+    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='device_borrower')
+    borrowed_time = models.BigIntegerField(null=True)
 
     def toDict(self) -> Dict[str, object]:
         """

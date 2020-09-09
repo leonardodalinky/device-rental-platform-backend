@@ -2,6 +2,12 @@ from django.http import JsonResponse
 from typing import Dict, List
 
 
+# 申请状态
+PENDING: int = 0
+APPROVED: int = 1
+REJECTED: int = -1
+
+
 def create_error_json_obj(error_code: int, message: str) -> Dict[str, object]:
     return {
         "error_code": error_code,
