@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from ..common import create_error_json_obj, create_success_json_res_with
+from ..common.common import create_error_json_obj, create_success_json_res_with
 from ..models.device import Device
 from ..models.user import User
 

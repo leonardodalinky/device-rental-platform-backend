@@ -137,3 +137,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False         # 是否关闭浏览器使得Ses
 SESSION_SAVE_EVERY_REQUEST = False              # 是否每次请求都保存Session，默认修改之后才保存（默认）
 
 AUTH_USER_MODEL = 'webservice.User'
+
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'drp404notfound@163.com'
+EMAIL_HOST_PASSWORD = 'JYNIRNKKYECYTSER'
+EMAIL_USE_SSL = True

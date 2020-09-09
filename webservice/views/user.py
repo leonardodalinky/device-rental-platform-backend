@@ -243,7 +243,10 @@ def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
     # 随机生成一个6位的code
     # 再发到邮箱中
     # 代码希望放到 ..common.mail 中
-    code: str
+    try:
+        code: str = send_verification_code(email)
+    except:
+        return JsonResponse(create_error_json_obj(207, '邮件验证码发送失败'), status=400)
 
     # 存入 ActivateCode 库中
     codes: QuerySet = ActivateCode.objects.filter(email=email)
