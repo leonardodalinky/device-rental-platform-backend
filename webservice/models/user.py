@@ -80,7 +80,7 @@ perm_admin.extend([
     # 查看全部的申请_上架申请（管理员）
     'can_get_apply_new_device_admin',
     # 查看所有的借用申请（管理员）
-    'can_get_apply_borrow_device_admin'
+    'can_get_apply_borrow_device_admin',
 ])
 
 

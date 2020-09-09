@@ -1,7 +1,7 @@
 """
     Author: Leonardodalinky
-    Date: 2020/09/08
-    Description: 评价模型
+    Date: 2020/09/09
+    Description: 评价视图
 """
 from django.http import HttpRequest, JsonResponse
 from django.db.models.query import QuerySet

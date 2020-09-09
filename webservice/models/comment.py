@@ -1,7 +1,7 @@
 """
     Author: Leonardodalinky
-    Date: 2020/09/08
-    Description: 评价模型的视图
+    Date: 2020/09/09
+    Description: 评价模型
 """
 from django.db import models
 

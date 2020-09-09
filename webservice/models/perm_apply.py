@@ -4,6 +4,7 @@ from django.db import models
 from .user import User
 from typing import Dict, List
 
+
 class PermApply(models.Model):
     apply_id = models.IntegerField(primary_key=True)
     models.AutoField(apply_id)
@@ -13,10 +14,6 @@ class PermApply(models.Model):
     handler = models.ForeignKey(User, related_name='PermApply_handler', on_delete=models.CASCADE, null=True)
     handle_time = models.IntegerField(null=True)
     reason = models.TextField()
-
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_perm_apply'
 
     def toDict(self) -> Dict[str, object]:
         """

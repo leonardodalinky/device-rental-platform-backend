@@ -24,10 +24,6 @@ class DeviceApply(models.Model):
     reason = models.TextField()
     return_time = models.IntegerField()
 
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_device_apply'
-
     def toDict(self) -> Dict[str, object]:
         """
         租借申请模型转字典类型对象
