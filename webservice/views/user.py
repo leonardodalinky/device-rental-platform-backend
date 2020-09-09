@@ -17,6 +17,7 @@ from ..models.user import User, ActivateCode
 
 from datetime import datetime, timedelta
 from typing import Dict, List
+import logging
 
 # 用户基本操作
 
@@ -124,8 +125,6 @@ def post_register_temp(request: HttpRequest, **kwargs) -> JsonResponse:
         return JsonResponse(create_error_json_obj(201, '学号已占用'), status=400)
     if User.objects.filter(email=email).count() != 0:
         return JsonResponse(create_error_json_obj(202, '邮箱已占用'), status=400)
-    if not isinstance(student_id, int):
-        return JsonResponse(create_error_json_obj(205, '学号类型错误'), status=400)
     # 邮箱格式验证
     try:
         validate_email(email)
@@ -229,7 +228,6 @@ def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
     :return: JsonResponse
     :rtype: JsonResponse
     """
-    # TODO
     email: str = request.POST.get('email')
     if email is None:
         return JsonResponse(create_error_json_obj(0, '参数错误'), status=400)
@@ -261,6 +259,16 @@ def post_user_mail_verify(request: HttpRequest, **kwargs) -> JsonResponse:
 
 # 用户管理
 def get_admin_user_list(request: HttpRequest, **kwargs) -> JsonResponse:
+    """
+    管理员获取用户列表
+
+    :param request: 视图请求
+    :type request: HttpRequest
+    :param kwargs: 额外参数
+    :type kwargs: Dict
+    :return: JsonResponse
+    :rtype: JsonResponse
+    """
     users: QuerySet = User.objects.all()
     users_list: List[User] = list(users)
     users_json_list: List[object] = list(map(lambda user: user.toDict(), users_list))
@@ -268,6 +276,9 @@ def get_admin_user_list(request: HttpRequest, **kwargs) -> JsonResponse:
 
 
 class AdminUserId(View):
+    """
+    管理员对用户的管理
+    """
     def patch(self, request: HttpRequest, user_id: int, *args, **kwargs) -> JsonResponse:
         users: QuerySet = User.objects.filter(user_id=user_id)
         if users.count() != 1:

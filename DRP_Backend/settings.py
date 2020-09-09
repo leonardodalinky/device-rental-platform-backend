@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -138,8 +139,49 @@ SESSION_SAVE_EVERY_REQUEST = False              # 是否每次请求都保存Ses
 
 AUTH_USER_MODEL = 'webservice.User'
 
+# 邮箱设置
+
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'drp404notfound@163.com'
 EMAIL_HOST_PASSWORD = 'JYNIRNKKYECYTSER'
 EMAIL_USE_SSL = True
+
+
+# 日志打印
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {module}.{funcName} {lineno:3} {levelname:7} => {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': './server.log',
+            'maxBytes': 4194304,  # 4 MB
+            'backupCount': 10,
+            'level': 'DEBUG',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
