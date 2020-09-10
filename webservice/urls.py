@@ -339,11 +339,18 @@ urlpatterns = [
              'perms_required': ['can_get_pm_receive']
          },
          name='get_pm_receive'),
-    ## 获取自己发出过的的站内信列表
+    ## 获取自己发出过的站内信列表
     path('pm/send', private_message.get_pm_send,
          {
              'method': 'GET',
              'perms_required': ['can_get_pm_send']
+         },
+         name='get_pm_send'),
+    ## 获取自己发出过的和接收到的站内信列表
+    path('pm/send-receive', private_message.get_pm_send_receive,
+         {
+             'method': 'GET',
+             'perms_required': ['can_get_pm_send_receive']
          },
          name='get_pm_send'),
     ## 标记所有未读为已读

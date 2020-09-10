@@ -1,4 +1,4 @@
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
 from datetime import datetime, timezone
@@ -36,6 +36,8 @@ def post_pm_send_receiver_id(request: HttpRequest, receiver_id: int, **kwargs) -
         return JsonResponse(common.create_error_json_obj(901, '此用户不存在'), 400)
     sender: User = request.user
     receiver: User = receivers.get()
+    if sender == receiver:
+        return JsonResponse(common.create_error_json_obj(906, '信件发给自己'), 400)
     pm: PrivateMessage = PrivateMessage.objects.create(
         type=type,
         sender=sender,
@@ -61,6 +63,18 @@ def get_pm_send(request: HttpRequest, **kwargs) -> JsonResponse:
     pms: QuerySet = PrivateMessage.objects.filter(sender=sender)
     return common.create_success_json_res_with({
         'messages': map(lambda x: x.toReceiveDict(), pms),
+    })
+
+
+def get_pm_send_receive(request: HttpRequest, **kwargs) -> JsonResponse:
+    user: User = request.user
+    pms_sender: QuerySet = PrivateMessage.objects.filter(sender=user)
+    pms_receiver: QuerySet = PrivateMessage.objects.filter(receiver=user)
+    return common.create_success_json_res_with({
+        'messages': {
+            'send': map(lambda x: x.toReceiveDict(), pms_sender),
+            'receive': map(lambda x: x.toReceiveDict(), pms_receiver),
+        }
     })
 
 

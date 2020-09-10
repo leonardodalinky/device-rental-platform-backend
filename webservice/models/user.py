@@ -9,6 +9,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import validate_email
+from django.db.models.query import QuerySet
 
 from typing import Dict, List
 from datetime import datetime, timezone
@@ -55,6 +56,8 @@ perm_borrower = [
     'can_get_pm_receive',
     # 获取自己发出的站内信列表
     'can_get_pm_send',
+    ## 获取自己发出过的和接收到的站内信列表
+    'can_get_pm_send_receive'
     # 标记所有未读站内信为已读
     'can_post_pm_mark_all',
     # 标记未读站内信为已读
@@ -232,6 +235,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         self.groups.clear()
         self.groups.add(get_group(new_group))
+
+    @classmethod
+    def refresh_permissions(cls) -> None:
+        groups: QuerySet[Group] = Group.objects.all()
+        for group in groups:
+            group.permissions.clear()
+        Permission.objects.all().delete()
+        for group in groups:
+            if group.name == 'borrower':
+                perms = list(map(_perms_mapping, perm_borrower))
+                group.permissions.set(perms)
+            if group.name == 'provider':
+                perms = list(map(_perms_mapping, perm_provider))
+                group.permissions.set(perms)
+            if group.name == 'admin':
+                perms = list(map(_perms_mapping, perm_admin))
+                group.permissions.set(perms)
 
 
 def get_group(group: str) -> Group:
