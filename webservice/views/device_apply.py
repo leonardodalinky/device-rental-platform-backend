@@ -14,6 +14,7 @@ class ApplyBorrowDevice(View):
     """
     借用设备申请与查看自己的申请
     """
+
     def post(self, request: HttpRequest, **kwargs) -> JsonResponse:
         applicant = request.user
         device_id = request.POST.get('device_id')
@@ -31,13 +32,13 @@ class ApplyBorrowDevice(View):
         device: Device = devices.first()
         if device.borrowed_time is not None:
             return JsonResponse(common.create_error_json_obj(401, '该设备已借出'), status=400)
-        p = DeviceApply.objects.create(device=device,
-                                       device_owner=device.owner,
-                                       status=common.PENDING,
-                                       applicant=applicant,
-                                       apply_time=int(datetime.now(timezone.utc).timestamp()),
-                                       reason=reason,
-                                       return_time=return_time)
+        p: DeviceApply = DeviceApply.objects.create(device=device,
+                                                    device_owner=device.owner,
+                                                    status=common.PENDING,
+                                                    applicant=applicant,
+                                                    apply_time=int(datetime.now(timezone.utc).timestamp()),
+                                                    reason=reason,
+                                                    return_time=return_time)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
@@ -117,12 +118,11 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     device.borrower = application.applicant
     device.borrowed_time = int(datetime.now(timezone.utc).timestamp())
     device.return_time = application.return_time
-    
+
     device.save()
 
-    #归回设备提醒
+    # 归回设备提醒
     ##设备使用期限即将到期提醒（测试时为1s前）
-    
 
     return common.create_success_json_res_with({})
 
