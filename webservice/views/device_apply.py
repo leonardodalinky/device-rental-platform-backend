@@ -5,7 +5,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views import View
 from django.db.models.query import QuerySet
 
-from ..common import common
+from ..common import common,mail
 from ..models.device import Device
 from ..models.device_apply import DeviceApply
 
@@ -38,6 +38,11 @@ class ApplyBorrowDevice(View):
                                        apply_time=int(datetime.now(timezone.utc).timestamp()),
                                        reason=reason,
                                        return_time=return_time)
+        p.save()
+        print(p)
+        #申请未处理提醒
+        Timer(return_time - int(datetime.now(timezone.utc).timestamp()), mail.send_apply_overtime(applicant.email, p))
+        
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
@@ -105,6 +110,11 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     application: DeviceApply = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
+    
+    #过期处理
+    if application.status != common.OVERTIME:
+        return JsonResponse(common.create_error_json_obj(305, '该申请已过期'), status=400)
+
     application.status = common.APPROVED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
@@ -117,12 +127,15 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     device.borrower = application.applicant
     device.borrowed_time = int(datetime.now(timezone.utc).timestamp())
     device.return_time = application.return_time
-    
     device.save()
 
-    #归回设备提醒
+    #归还设备提醒
+    applicant = application.applicant
+    mail_to = applicant.email
     ##设备使用期限即将到期提醒（测试时为1s前）
-    
+    Timer(application.return_time - int(datetime.now(timezone.utc).timestamp()) - 1, mail.send_remind_return(mail_to, device, applicant))
+    ##设备到期提醒
+    Timer(application.return_time - int(datetime.now(timezone.utc).timestamp()), mail.send_borrow_overtime(mail_to, device, applicant))
 
     return common.create_success_json_res_with({})
 
@@ -144,6 +157,11 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
     application: DeviceApply = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
+
+    #过期处理
+    if application.status != common.OVERTIME:
+        return JsonResponse(common.create_error_json_obj(305, '该申请已过期'), status=400)
+
     application.status = common.REJECTED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())

@@ -6,6 +6,7 @@ from typing import Dict, List
 PENDING: int = 0
 APPROVED: int = 1
 REJECTED: int = -1
+OVERTIME: int = 2
 
 
 def create_error_json_obj(error_code: int, message: str) -> Dict[str, object]:
