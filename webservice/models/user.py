@@ -45,12 +45,10 @@ perm_borrower = [
     'can_post_apply_return_device_device_id',
     # 查看操作记录
     'can_get_log_user_id',
-<<<<<<< HEAD
     # 申请恢复信用分
     'can_post_apply_recover_credit',
     # 查看自己的恢复信用分申请
     'can_get_apply_recover_credit', 
-=======
     # 发送站内信
     'can_post_pm_send_receiver_id',
     # 获取自己收到的站内信列表
@@ -67,7 +65,6 @@ perm_borrower = [
     'can_delete_pm_pm_id',
     # 删除自己收到的所有站内信
     'can_delete_pm_all',
->>>>>>> 3f64ea899f892dc8090498bd80768191dde9c03b
 ]
 perm_provider: List = list(perm_borrower)
 perm_provider.extend([

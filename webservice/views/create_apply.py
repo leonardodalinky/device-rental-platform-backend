@@ -83,11 +83,8 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
                           description=application.device_description,
                           owner=application.applicant,
                           created_time=int(datetime.now(timezone.utc).timestamp()))
-<<<<<<< HEAD
     application.save()
     mail.send_perma_apply_accept(application.applicant.email,application)
-=======
->>>>>>> 3f64ea899f892dc8090498bd80768191dde9c03b
     return common.create_success_json_res_with({})
 
 

@@ -8,11 +8,8 @@ from .views import log
 from .views import perm_apply
 from .views import user
 from .views import dashboard
-<<<<<<< HEAD
 from .views import credit_apply
-=======
 from .views import private_message
->>>>>>> 3f64ea899f892dc8090498bd80768191dde9c03b
 
 # TODO: 增加各个 view
 
