@@ -45,6 +45,10 @@ perm_borrower = [
     'can_post_apply_return_device_device_id',
     # 查看操作记录
     'can_get_log_user_id',
+    # 申请恢复信用分
+    'can_post_apply_recover_credit',
+    # 查看自己的恢复信用分申请
+    'can_get_apply_recover_credit', 
 ]
 perm_provider: List = list(perm_borrower)
 perm_provider.extend([
@@ -81,6 +85,10 @@ perm_admin.extend([
     'can_get_apply_new_device_admin',
     # 查看所有的借用申请（管理员）
     'can_get_apply_borrow_device_admin',
+    # 处理申请_恢复信用分
+    'can_post_apply_recover_credit_apply_id',
+    # 查看全部的申请_恢复信用分（管理员）
+    'can_get_apply_recover_credit_admin',
 ])
 
 
@@ -149,6 +157,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     register_time = models.BigIntegerField()
     email = models.EmailField('email address', unique=True)
 
+    #信用分
+    credit_score = models.IntegerField(default=100)
+
     USERNAME_FIELD = 'student_id'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = [
@@ -175,7 +186,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             "name": self.name,
             "register_time": self.register_time,
             "email": self.email,
-            "group": self.groups.all().get().name
+            "group": self.groups.all().get().name,
+
+            #信用分
+            "credit_score": self.credit_score
+
         }
 
     def get_group(self) -> str:

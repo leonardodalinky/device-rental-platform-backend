@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from ..common import common
+from ..common import common,mail
 from ..models.create_apply import CreateApply
 from ..models.device import Device
 from ..models.user import User
@@ -81,6 +81,7 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
                           owner=application.applicant,
                           created_time=int(datetime.now(timezone.utc).timestamp()))
     application.save()
+    mail.send_perma_apply_accept(application.applicant.email,application)
     return common.create_success_json_res_with({})
 
 
@@ -105,4 +106,5 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
+    mail.send_create_apply_reject(application.applicant.email, application)
     return common.create_success_json_res_with({})
