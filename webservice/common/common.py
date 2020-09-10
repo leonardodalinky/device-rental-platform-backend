@@ -5,6 +5,8 @@ from typing import Dict, List
 # 申请状态
 PENDING: int = 0
 APPROVED: int = 1
+## 只用于设备申请表
+APPROVED_RETURNED: int = 2
 REJECTED: int = -1
 
 

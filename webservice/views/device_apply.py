@@ -175,6 +175,12 @@ def post_apply_return_device(request: HttpRequest, device_id: int, **kwargs) -> 
         return JsonResponse(common.create_error_json_obj(403, '该设备未被该用户租借'), status=400)
     # TODO
     ## 未按时归还
+    # 设备申请
+    applies: QuerySet[DeviceApply] = device.deviceapply_set.filter(status=common.APPROVED)
+    for apply in applies:
+        apply.status = common.APPROVED_RETURNED
+        apply.return_time = int(datetime.now(timezone.utc).timestamp())
+        apply.save()
     # 设备
     device.borrowed_time = None
     device.borrower = None
