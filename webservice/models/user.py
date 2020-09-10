@@ -57,7 +57,7 @@ perm_borrower = [
     # 获取自己发出的站内信列表
     'can_get_pm_send',
     ## 获取自己发出过的和接收到的站内信列表
-    'can_get_pm_send_receive'
+    'can_get_pm_send_receive',
     # 标记所有未读站内信为已读
     'can_post_pm_mark_all',
     # 标记未读站内信为已读

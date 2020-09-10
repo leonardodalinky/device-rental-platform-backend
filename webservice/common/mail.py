@@ -1,7 +1,8 @@
 from django.core.mail import send_mail
-import random,time
-from .common import PENDING,OVERTIME
-from ..models import DeviceApply,Device,User
+import random, time
+from .common import PENDING, OVERTIME
+from ..models import DeviceApply, Device, User
+
 
 def send_verification_code(mail_to) -> str:
     code = "".join([random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') for i in range(6)])
@@ -13,6 +14,7 @@ def send_verification_code(mail_to) -> str:
         fail_silently=False,
     )
     return code
+
 
 def send_remind_return(mail_to, device_id, user_id, sleep):
     time.sleep(sleep)
@@ -28,6 +30,7 @@ def send_remind_return(mail_to, device_id, user_id, sleep):
         fail_silently=False,
     )
 
+
 def send_borrow_overtime(mail_to, device_id, user_id, sleep):
     time.sleep(sleep)
     device = Device.objects.get(device_id=device_id)
@@ -41,6 +44,7 @@ def send_borrow_overtime(mail_to, device_id, user_id, sleep):
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_apply_overtime(mail_to, apply_id, sleep):
     time.sleep(sleep)
@@ -57,98 +61,106 @@ def send_apply_overtime(mail_to, apply_id, sleep):
         fail_silently=False,
     )
 
+
 def send_create_apply_accept(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 创建设备申请通过',
-        '您的创建设备申请已通过'+
-        '\napply_id:'+application.apply_id+
-        '\ndevice_name:'+application.device_name+
-        '\ndevice_description:'+application.device_description+
-        '\nhandler_name:'+application.handler.name,
+        '您的创建设备申请已通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n设备名称: ' + application.device_name +
+        '\n设备描述: ' + application.device_description +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_create_apply_reject(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 创建设备申请未通过',
-        '您的创建设备申请未通过'+
-        '\napply_id:'+application.apply_id+
-        '\ndevice_name:'+application.device_name+
-        '\ndevice_description:'+application.device_description+
-        '\nhandler_name:'+application.handler.name,
+        '您的创建设备申请未通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n设备名称: ' + application.device_name +
+        '\n设备描述: ' + application.device_description +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_device_apply_accept(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 租借设备申请通过',
-        '您的租借设备申请已通过'+
-        '\napply_id:'+application.apply_id+
-        '\ndevice_name:'+application.device.name+
-        '\nhandler_name:'+application.handler.name+
-        '\nreturn_time:'+application.return_time,
+        '您的租借设备申请已通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n设备名称: ' + application.device.name +
+        '\n处理人: ' + application.handler.name +
+        '\n预计返还时间: ' + application.return_time,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_device_apply_reject(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 租借设备申请未通过',
-        '您的租借设备申请未通过'+
-        '\napply_id:'+application.apply_id+
-        '\ndevice_name:'+application.device.name+
-        '\nhandler_name:'+application.handler.name+
-        '\nreturn_time:'+application.return_time,
+        '您的租借设备申请未通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n设备名称: ' + application.device.name +
+        '\n处理人: ' + application.handler.name +
+        '\n预计返还时间: ' + application.return_time,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_perma_apply_accept(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 权限申请通过',
-        '您的权限申请已通过'+
-        '\napply_id:'+application.apply_id+
-        '\nhandler_name:'+application.handler.name+
+        '您的权限申请已通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_perma_apply_reject(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 权限申请未通过',
-        '您的权限申请未通过'+
-        '\napply_id:'+application.apply_id+
-        '\nhandler_name:'+application.handler.name+
+        '您的权限申请未通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
+
 
 def send_credit_apply_accept(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 信用分恢复申请通过',
-        '您的信用分恢复申请已通过'+
-        '\napply_id:'+application.apply_id+
-        '\ncredit_score:'+application.applicant.credit_score+
-        '\nhandler_name:'+application.handler.name+
+        '您的信用分恢复申请已通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n信用分: ' + str(application.applicant.credit_score) +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
     )
 
+
 def send_credit_apply_reject(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 信用分恢复申请未通过',
-        '您的信用分恢复申请未通过'+
-        '\napply_id:'+application.apply_id+
-        '\nhandler_name:'+application.handler.name+
+        '您的信用分恢复申请未通过' +
+        '\n申请 ID: ' + str(application.apply_id) +
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=False,
