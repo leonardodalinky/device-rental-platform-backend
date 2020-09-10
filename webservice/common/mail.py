@@ -27,7 +27,7 @@ def send_remind_return(mail_to, device_id, user_id, sleep):
         '您租借的设备还有1s就过期了，记得及时归还',
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -42,7 +42,7 @@ def send_borrow_overtime(mail_to, device_id, user_id, sleep):
         '您租借的设备已经过期了，请马上归还，超时越长，您的信用分就会越低，信用分低于60系统将不会允许您再租借设备',
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -58,7 +58,7 @@ def send_apply_overtime(mail_to, apply_id, sleep):
         '您的租借设备申请未被处理，已经过期，如有需要请重新申请',
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -72,7 +72,7 @@ def send_create_apply_accept(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -86,7 +86,7 @@ def send_create_apply_reject(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -100,7 +100,7 @@ def send_device_apply_accept(mail_to, application):
         '\n预计返还时间: ' + application.return_time,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -114,11 +114,11 @@ def send_device_apply_reject(mail_to, application):
         '\n预计返还时间: ' + application.return_time,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
-def send_perma_apply_accept(mail_to, application):
+def send_perm_apply_accept(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 权限申请通过',
         '您的权限申请已通过' +
@@ -126,11 +126,11 @@ def send_perma_apply_accept(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
-def send_perma_apply_reject(mail_to, application):
+def send_perm_apply_reject(mail_to, application):
     send_mail(
         '[DRP 404 Not Found] 权限申请未通过',
         '您的权限申请未通过' +
@@ -138,7 +138,7 @@ def send_perma_apply_reject(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -151,7 +151,7 @@ def send_credit_apply_accept(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -163,5 +163,5 @@ def send_credit_apply_reject(mail_to, application):
         '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
-        fail_silently=False,
+        fail_silently=True,
     )

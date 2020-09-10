@@ -46,9 +46,9 @@ class ApplyBorrowDevice(View):
                                        reason=reason,
                                        return_time=return_time)
 
-        #申请未处理提醒
-        args = (applicant.email, p.apply_id, int(return_time) - int(datetime.now(timezone.utc).timestamp()))
-        Thread(target=mail.send_apply_overtime, args=args).start()
+        # #申请未处理提醒
+        # args = (applicant.email, p.apply_id, int(return_time) - int(datetime.now(timezone.utc).timestamp()))
+        # Thread(target=mail.send_apply_overtime, args=args).start()
         
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
@@ -141,12 +141,12 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     #归还设备提醒
     applicant = application.applicant
     mail_to = applicant.email
-    ##设备使用期限即将到期提醒（测试时为1s前）
-    args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()) - 1)
-    Thread(target = mail.send_remind_return, args = args).start()
-    ##设备到期提醒
-    args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()))
-    Thread(target = mail.send_borrow_overtime, args = args).start()
+    # ##设备使用期限即将到期提醒（测试时为1s前）
+    # args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()) - 1)
+    # Thread(target = mail.send_remind_return, args = args).start()
+    # ##设备到期提醒
+    # args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()))
+    # Thread(target = mail.send_borrow_overtime, args = args).start()
 
     mail.send_device_apply_accept(applicant.email, application)
     return common.create_success_json_res_with({})

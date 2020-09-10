@@ -81,7 +81,7 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.handle_reason = handle_reason
     application.save()
-    mail.send_perma_apply_accept(applicant.email,application)
+    mail.send_perm_apply_accept(applicant.email,application)
     return common.create_success_json_res_with({})
 
 
@@ -108,7 +108,7 @@ def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id: i
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.handle_reason = handle_reason
     application.save()
-    mail.send_perma_apply_reject(application.applicant.email,application)
+    mail.send_perm_apply_reject(application.applicant.email,application)
     return common.create_success_json_res_with({})
 
 
