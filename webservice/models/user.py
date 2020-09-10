@@ -112,7 +112,8 @@ class CustomUserManager(BaseUserManager):
     """
     用户管理的自定义 Manager
     """
-    def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str, group: str = 'unactivated'):
+    def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str,
+                    group: str = 'borrower', credit: int = 100):
         """
         生成新的用户
 
@@ -137,13 +138,15 @@ class CustomUserManager(BaseUserManager):
             validate_email(email)
         except:
             raise ValueError('Wrong email address')
-        user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email)
+        user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email,
+                                credit_score=credit)
         user.set_password(password)
         user.save()
         user.groups.add(get_group(group))
         return user
 
-    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str):
+    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str,
+                         credit: int = 100):
         """
         生成新的管理员
 
@@ -160,7 +163,7 @@ class CustomUserManager(BaseUserManager):
         :return: user
         :rtype: User
         """
-        return self.create_user(student_id, password, name, register_time, email=email, group='admin')
+        return self.create_user(student_id, password, name, register_time, email=email, group='admin', credit_score=100)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -173,7 +176,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     register_time = models.BigIntegerField()
     email = models.EmailField('email address', unique=True)
 
-    #信用分
+    # 信用分
     credit_score = models.IntegerField(default=100)
 
     USERNAME_FIELD = 'student_id'
