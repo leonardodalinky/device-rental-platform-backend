@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from ..common import common,mail
 from ..models.device import Device
 from ..models.user import User
-from ..models.perm_apply import CreditApply
+from ..models.credit_apply import CreditApply
 from ..models.user import User
 
 
