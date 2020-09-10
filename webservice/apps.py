@@ -1,10 +1,8 @@
 from django.apps import AppConfig
-from django.urls import resolve, reverse
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
+from django.urls import resolve, reverse
 
 from .common.common import create_error_json_obj
-
-from typing import Dict, List
 
 
 class WebserviceConfig(AppConfig):
@@ -19,6 +17,7 @@ class LoginRequireMiddleware:
     """
     未登录时的跳转中间件
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -43,6 +42,7 @@ class MethodValidateMiddleware:
     """
     处理请求 Method 的中间件
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -82,6 +82,7 @@ class PermissionValidateMiddleware:
     """
     权限处理的中间件
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -117,6 +118,7 @@ class UserLogMiddleware:
     """
     用户级日志的中间件
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
 

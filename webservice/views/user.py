@@ -3,21 +3,21 @@
     Date: 2020/09/07
     Description: 用户模型的视图
 """
-from django.http import HttpRequest, JsonResponse, QueryDict
-from django.db.models.query import QuerySet
+from datetime import datetime, timezone, timedelta
+from typing import Dict, List
+
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_s
 from django.contrib.auth import logout as logout_s
-from django.views import View
 from django.core.validators import validate_email
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse, QueryDict
+from django.views import View
 
 from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
 from ..common.mail import send_verification_code
 from ..models.user import User, ActivateCode
 
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List
-import logging
 
 # 用户基本操作
 
@@ -134,7 +134,8 @@ def post_register_temp(request: HttpRequest, **kwargs) -> JsonResponse:
     if password == '':
         return JsonResponse(create_error_json_obj(203, '密码过于简单'), status=400)
     # 注册新用户
-    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email, group='borrower')
+    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email,
+                                 group='borrower')
     return create_success_json_res_with({"user_id": u.user_id})
 
 
@@ -181,7 +182,8 @@ def post_register(request: HttpRequest, **kwargs) -> JsonResponse:
     else:
         db_code.delete()
     # 注册新用户
-    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email, group='borrower')
+    u = User.objects.create_user(student_id, password, name, int(datetime.now(timezone.utc).timestamp()), email=email,
+                                 group='borrower')
     return create_success_json_res_with({"user_id": u.user_id})
 
 
@@ -281,6 +283,7 @@ class AdminUserId(View):
     """
     管理员对用户的管理
     """
+
     def patch(self, request: HttpRequest, user_id: int, *args, **kwargs) -> JsonResponse:
         users: QuerySet = User.objects.filter(user_id=user_id)
         if users.count() != 1:
@@ -297,5 +300,7 @@ class AdminUserId(View):
         if users.count() != 1:
             return JsonResponse(create_error_json_obj(301, '无此用户'), status=400)
         user: User = users.get()
+        # 删除用户的所有设备（暗含删除所有相关申请）
+        user.Device_owner_set.all().delete()
         user.delete()
         return create_success_json_res_with({})

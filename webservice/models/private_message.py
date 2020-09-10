@@ -1,8 +1,9 @@
+from typing import Dict
+
 from django.db import models
 
 # Create your models here.
 from .user import User
-from typing import Dict, List
 
 
 class PrivateMessage(models.Model):

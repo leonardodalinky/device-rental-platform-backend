@@ -1,14 +1,12 @@
-from django.db.models.query import QuerySet, Q
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views import View
 from datetime import datetime, timezone
+from typing import List
+
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
 
 from ..common import common
-from ..models.device import Device
-from ..models.user import User
 from ..models.private_message import PrivateMessage
-
-from typing import List, Dict
+from ..models.user import User
 
 
 def post_pm_send_receiver_id(request: HttpRequest, receiver_id: int, **kwargs) -> JsonResponse:

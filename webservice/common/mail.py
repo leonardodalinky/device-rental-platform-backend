@@ -1,5 +1,8 @@
+import random
+import time
+
 from django.core.mail import send_mail
-import random, time
+
 from .common import PENDING, OVERTIME
 from ..models import DeviceApply, Device, User
 

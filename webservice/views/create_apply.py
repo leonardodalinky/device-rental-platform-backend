@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from ..common import common,mail
+from ..common import common, mail
 from ..models.create_apply import CreateApply
 from ..models.device import Device
 from ..models.user import User
@@ -14,6 +14,7 @@ class ApplyNewDevice(View):
     """
     提供设备申请与查看自己的申请
     """
+
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         user: User = request.user
         device_name = request.POST.get('device_name')
@@ -56,7 +57,7 @@ def get_apply_new_device_admin(request: HttpRequest, **kwargs) -> JsonResponse:
     return common.create_success_json_res_with({'applications': applications_json_list})
 
 
-def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse :
+def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
     """
     允许提供设备
 
@@ -70,7 +71,7 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
     handle_reason: str = request.POST.get('handle_reason', '')
     applications = CreateApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
-        return JsonResponse(common.create_error_json_obj(303,'该申请不存在'), status=400)
+        return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
     application = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
@@ -84,11 +85,11 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
                           owner=application.applicant,
                           created_time=int(datetime.now(timezone.utc).timestamp()))
     application.save()
-    mail.send_perm_apply_accept(application.applicant.email,application)
+    mail.send_perm_apply_accept(application.applicant.email, application)
     return common.create_success_json_res_with({})
 
 
-def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse :
+def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
     """
     拒绝提供设备
 
@@ -102,7 +103,7 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     handle_reason: str = request.POST.get('handle_reason', '')
     applications = CreateApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
-        return JsonResponse(common.create_error_json_obj(303,'该申请不存在'), status=400)
+        return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
     application = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)

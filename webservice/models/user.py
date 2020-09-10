@@ -3,19 +3,16 @@
     Date: 2020/09/07
     Description: 用户模型
 """
-from django.db import models
+from datetime import datetime, timezone
+from typing import Dict, List
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import validate_email
+from django.db import models
 from django.db.models.query import QuerySet
 
-from typing import Dict, List
-from datetime import datetime, timezone
-
-
-# TODO: 数据统计未完善，日志未加入
 # 权限设定
 perm_borrower = [
     # 自己用户信息
@@ -49,7 +46,7 @@ perm_borrower = [
     # 申请恢复信用分
     'can_post_apply_recover_credit',
     # 查看自己的恢复信用分申请
-    'can_get_apply_recover_credit', 
+    'can_get_apply_recover_credit',
     # 发送站内信
     'can_post_pm_send_receiver_id',
     # 获取自己收到的站内信列表
@@ -115,6 +112,7 @@ class CustomUserManager(BaseUserManager):
     """
     用户管理的自定义 Manager
     """
+
     def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str,
                     group: str = 'borrower', credit: int = 100):
         """
@@ -210,7 +208,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "email": self.email,
             "group": self.groups.all().get().name,
 
-            #信用分
+            # 信用分
             "credit_score": self.credit_score
 
         }
@@ -323,7 +321,6 @@ class ActivateCode(models.Model):
         :return: 是否过期
         :rtype: bool
         """
-        # TODO:
         now_datetime: datetime = datetime.now().replace(tzinfo=timezone.utc)
         if now_datetime > self.expired_time.replace(tzinfo=timezone.utc):
             return True

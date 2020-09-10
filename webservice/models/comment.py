@@ -27,4 +27,3 @@ class Comment(models.Model):
             'comment_time': self.comment_time,
             'content': self.content,
         }
-

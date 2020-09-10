@@ -85,4 +85,3 @@ def get_borrowed_device_userid(request: HttpRequest, user_id: int, **kwargs) -> 
         "user_id": user_id,
         "devices": devices_json_list,
     })
-

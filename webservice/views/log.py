@@ -3,15 +3,14 @@
     Date: 2020/09/08
     Description: 评价模型
 """
-from django.http import HttpRequest, JsonResponse
-from django.db.models.query import QuerySet
-from django.views import View
+from typing import List
 
-from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
+
+from ..common.common import create_error_json_obj, create_success_json_res_with
 from ..models.log import Log
 from ..models.user import User
-from typing import Dict, List
-from datetime import datetime, timezone
 
 
 def get_log_user_id(request: HttpRequest, user_id: int, **kwargs) -> JsonResponse:

@@ -1,6 +1,6 @@
-from django.http import JsonResponse
-from typing import Dict, List
+from typing import Dict
 
+from django.http import JsonResponse
 
 # 申请状态
 REJECTED: int = -1
@@ -36,4 +36,3 @@ def create_success_json_res_with(content: Dict[str, object]) -> JsonResponse:
     d = {"success": True}
     d.update(content)
     return JsonResponse(d, status=200)
-

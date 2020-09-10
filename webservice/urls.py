@@ -2,16 +2,14 @@ from django.urls import path
 
 from .views import comment
 from .views import create_apply
+from .views import credit_apply
+from .views import dashboard
 from .views import device
 from .views import device_apply
 from .views import log
 from .views import perm_apply
-from .views import user
-from .views import dashboard
-from .views import credit_apply
 from .views import private_message
-
-# TODO: 增加各个 view
+from .views import user
 
 urlpatterns = [
     # 用户
@@ -290,7 +288,7 @@ urlpatterns = [
              'perms_required': ['can_post_apply_return_device_device_id']
          },
          name='post_apply_return_device'),
-    
+
     # 恢复信用分申请
     ## 申请恢复信用分与查看自己的申请
     path('apply/recover-credit', credit_apply.ApplyRecoverCredit.as_view(),

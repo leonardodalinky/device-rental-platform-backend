@@ -10,13 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
-from .mail_settings import *
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -28,7 +26,6 @@ SECRET_KEY = 'er$uhr6bw-5@ic&9(n1pwhilcb6^20^p6dr4zp2=o6(q+ye5n1'
 DEBUG = False
 
 ALLOWED_HOSTS = ['ayajike.xyz', '127.0.0.1']
-
 
 # Application definition
 
@@ -76,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'DRP_Backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -86,7 +82,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -106,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -120,24 +114,22 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-
 # session 设置
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # 引擎（默认）
 
-SESSION_COOKIE_NAME = "session_id"              # Session的cookie保存在浏览器上时的key，即：session_id＝随机字符串（默认）
-SESSION_COOKIE_PATH = "/"                       # Session的cookie保存的路径（默认）
-SESSION_COOKIE_DOMAIN = None                    # Session的cookie保存的域名（默认）
-SESSION_COOKIE_SECURE = False                   # 是否Https传输cookie（默认）
-SESSION_COOKIE_HTTPONLY = True                  # 是否Session的cookie只支持http传输（默认）
-SESSION_COOKIE_AGE = 604800                     # Session的cookie失效日期（1周）
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False         # 是否关闭浏览器使得Session过期（默认）
-SESSION_SAVE_EVERY_REQUEST = False              # 是否每次请求都保存Session，默认修改之后才保存（默认）
+SESSION_COOKIE_NAME = "session_id"  # Session的cookie保存在浏览器上时的key，即：session_id＝随机字符串（默认）
+SESSION_COOKIE_PATH = "/"  # Session的cookie保存的路径（默认）
+SESSION_COOKIE_DOMAIN = None  # Session的cookie保存的域名（默认）
+SESSION_COOKIE_SECURE = False  # 是否Https传输cookie（默认）
+SESSION_COOKIE_HTTPONLY = True  # 是否Session的cookie只支持http传输（默认）
+SESSION_COOKIE_AGE = 604800  # Session的cookie失效日期（1周）
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # 是否关闭浏览器使得Session过期（默认）
+SESSION_SAVE_EVERY_REQUEST = False  # 是否每次请求都保存Session，默认修改之后才保存（默认）
 
 AUTH_USER_MODEL = 'webservice.User'
 

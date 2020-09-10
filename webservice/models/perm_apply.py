@@ -1,8 +1,9 @@
+from typing import Dict
+
 from django.db import models
 
 # Create your models here.
 from .user import User
-from typing import Dict, List
 
 
 class PermApply(models.Model):
@@ -10,7 +11,7 @@ class PermApply(models.Model):
     status = models.IntegerField()
     applicant = models.ForeignKey(User, related_name='PermApply_applicant', on_delete=models.CASCADE)
     apply_time = models.BigIntegerField()
-    handler = models.ForeignKey(User, related_name='PermApply_handler', on_delete=models.CASCADE, null=True)
+    handler = models.ForeignKey(User, related_name='PermApply_handler', on_delete=models.SET_NULL, null=True)
     handle_time = models.BigIntegerField(null=True)
     reason = models.TextField()
     handle_reason = models.TextField(null=True)

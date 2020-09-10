@@ -1,7 +1,7 @@
-from ..models.user import User
-from ..models.log import Log
-
 from datetime import datetime, timezone
+
+from ..models.log import Log
+from ..models.user import User
 
 
 def create_debug_log_now(module: str, user: User, content: str) -> Log:
