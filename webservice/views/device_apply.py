@@ -8,6 +8,7 @@ from django.db.models.query import QuerySet
 from ..common import common,mail
 from ..models.device import Device
 from ..models.device_apply import DeviceApply
+from ..models.user import User
 
 
 class ApplyBorrowDevice(View):
@@ -110,6 +111,7 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications = DeviceApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -124,6 +126,7 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     application.status = common.APPROVED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
     application.save()
     device: Device = application.device
     if device.borrowed_time is not None:
@@ -160,6 +163,7 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications = DeviceApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -174,6 +178,7 @@ def post_apply_borrow_device_apply_id_reject(request: HttpRequest, apply_id, **k
     application.status = common.REJECTED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
     application.save()
     device = application.device
     if device.borrowed_time is not None:
@@ -209,8 +214,30 @@ def post_apply_return_device(request: HttpRequest, device_id: int, **kwargs) -> 
         borrower.credit_score = 0
         borrower.save()
 
+    # 设备申请
+    applies: QuerySet[DeviceApply] = device.deviceapply_set.filter(status=common.APPROVED)
+    for apply in applies:
+        apply.status = common.APPROVED_RETURNED
+        apply.return_time = int(datetime.now(timezone.utc).timestamp())
+        apply.save()
+    # 设备
     device.borrowed_time = None
     device.borrower = None
     device.return_time = None
     device.save()
+    return common.create_success_json_res_with({})
+
+
+def post_apply_borrow_device_apply_id_cancel(request: HttpRequest, apply_id: int, **kwargs) -> JsonResponse:
+    applies = DeviceApply.objects.filter(apply_id=apply_id)
+    if applies.count() != 1:
+        return JsonResponse(common.create_error_json_obj(1, '处理申请时发生未知错误'), status=400)
+    apply: DeviceApply = applies.get()
+    user: User = request.user
+    if user.get_group() != 'admin' and apply.applicant != user:
+        return JsonResponse(common.create_error_json_obj(502, '权限不足'), status=403)
+    apply.status = common.CANCELED
+    apply.handler = user
+    apply.handle_time = int(datetime.now(timezone.utc).timestamp())
+    apply.save()
     return common.create_success_json_res_with({})

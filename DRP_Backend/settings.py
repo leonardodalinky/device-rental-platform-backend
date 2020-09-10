@@ -25,9 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'er$uhr6bw-5@ic&9(n1pwhilcb6^20^p6dr4zp2=o6(q+ye5n1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ['ayajike.xyz','localhost']
+=======
+ALLOWED_HOSTS = ['ayajike.xyz', '127.0.0.1']
+>>>>>>> 3f64ea899f892dc8090498bd80768191dde9c03b
 
 
 # Application definition

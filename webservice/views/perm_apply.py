@@ -66,6 +66,7 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications: QuerySet = PermApply.objects.filter(apply_id=apply_id)
     if len(applications) == 0:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -76,14 +77,15 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     applicant.change_group('provider')
     applicant.save()
     application.status = common.APPROVED
-    application.handler_id = request.user
+    application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
     application.save()
     mail.send_perma_apply_accept(applicant.email,application)
     return common.create_success_json_res_with({})
 
 
-def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
+def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id: int, **kwargs) -> JsonResponse:
     """
     拒绝成为设备拥有者
 
@@ -94,6 +96,7 @@ def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id, *
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications: QuerySet = PermApply.objects.filter(apply_id=apply_id)
     if len(applications) != 1:
         return JsonResponse(common.create_error_json_obj(303, '该申请不存在'), status=400)
@@ -101,8 +104,24 @@ def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id, *
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
-    application.handler_id = request.user
+    application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
     application.save()
     mail.send_perma_apply_reject(application.applicant.email,application)
+    return common.create_success_json_res_with({})
+
+
+def post_apply_become_provider_apply_id_cancel(request: HttpRequest, apply_id: int, **kwargs) -> JsonResponse:
+    applies = PermApply.objects.filter(apply_id=apply_id)
+    if applies.count() != 1:
+        return JsonResponse(common.create_error_json_obj(1, '处理申请时发生未知错误'), status=400)
+    apply: PermApply = applies.get()
+    user: User = request.user
+    if user.get_group() != 'admin' and apply.applicant != user:
+        return JsonResponse(common.create_error_json_obj(502, '权限不足'), status=403)
+    apply.status = common.CANCELED
+    apply.handler = user
+    apply.handle_time = int(datetime.now(timezone.utc).timestamp())
+    apply.save()
     return common.create_success_json_res_with({})
