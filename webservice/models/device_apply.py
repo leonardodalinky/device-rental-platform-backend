@@ -9,7 +9,6 @@ from .user import User
 
 class DeviceApply(models.Model):
     apply_id = models.AutoField(primary_key=True)
-    # models.AutoField(apply_id)
     device = models.ForeignKey(
         Device, on_delete=models.CASCADE)
     device_owner = models.ForeignKey(
@@ -23,6 +22,7 @@ class DeviceApply(models.Model):
         User, on_delete=models.CASCADE, related_name='DeviceApply_handler', null=True)
     handle_time = models.BigIntegerField(null=True)
     reason = models.TextField()
+    handle_reason = models.TextField(null=True)
     return_time = models.BigIntegerField()
 
     def toDict(self) -> Dict[str, object]:
@@ -44,5 +44,6 @@ class DeviceApply(models.Model):
             'handler': handler,
             'handle_time': self.handle_time,
             'reason': self.reason,
-            'return_time': self.return_time
+            'return_time': self.return_time,
+            'handle_reason': self.handle_reason,
         }

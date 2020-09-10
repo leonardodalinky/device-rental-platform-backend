@@ -45,6 +45,22 @@ perm_borrower = [
     'can_post_apply_return_device_device_id',
     # 查看操作记录
     'can_get_log_user_id',
+    # 发送站内信
+    'can_post_pm_send_receiver_id',
+    # 获取自己收到的站内信列表
+    'can_get_pm_receive',
+    # 获取自己发出的站内信列表
+    'can_get_pm_send',
+    # 标记所有未读站内信为已读
+    'can_post_pm_mark_all',
+    # 标记未读站内信为已读
+    'can_post_pm_mark',
+    # 获取自己未读的站内信数量
+    'can_get_pm_unread_count',
+    # 删除自己收到的站内信
+    'can_delete_pm_pm_id',
+    # 删除自己收到的所有站内信
+    'can_delete_pm_all',
 ]
 perm_provider: List = list(perm_borrower)
 perm_provider.extend([

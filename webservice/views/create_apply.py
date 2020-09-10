@@ -67,6 +67,7 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications = CreateApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303,'该申请不存在'), status=400)
@@ -76,11 +77,12 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
     application.status = common.APPROVED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
+    application.save()
     Device.objects.create(name=application.device_name,
                           description=application.device_description,
                           owner=application.applicant,
                           created_time=int(datetime.now(timezone.utc).timestamp()))
-    application.save()
     return common.create_success_json_res_with({})
 
 
@@ -95,6 +97,7 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     :return: JsonResponse
     :rtype: JsonResponse
     """
+    handle_reason: str = request.POST.get('handle_reason', '')
     applications = CreateApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303,'该申请不存在'), status=400)
@@ -104,5 +107,21 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     application.status = common.REJECTED
     application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
+    application.handle_reason = handle_reason
     application.save()
+    return common.create_success_json_res_with({})
+
+
+def post_apply_new_device_apply_id_cancel(request: HttpRequest, apply_id: int, **kwargs) -> JsonResponse:
+    applies = CreateApply.objects.filter(apply_id=apply_id)
+    if applies.count() != 1:
+        return JsonResponse(common.create_error_json_obj(1, '处理申请时发生未知错误'), status=400)
+    apply: CreateApply = applies.get()
+    user: User = request.user
+    if user.get_group() != 'admin' and apply.applicant != user:
+        return JsonResponse(common.create_error_json_obj(502, '权限不足'), status=403)
+    apply.status = common.CANCELED
+    apply.handler = user
+    apply.handle_time = int(datetime.now(timezone.utc).timestamp())
+    apply.save()
     return common.create_success_json_res_with({})

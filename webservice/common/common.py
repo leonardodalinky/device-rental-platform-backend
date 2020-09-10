@@ -3,11 +3,16 @@ from typing import Dict, List
 
 
 # 申请状态
+REJECTED: int = -1
 PENDING: int = 0
 APPROVED: int = 1
 ## 只用于设备申请表
 APPROVED_RETURNED: int = 2
-REJECTED: int = -1
+CANCELED: int = 3
+# 站内信类型
+PM_EMERGENCY = 102
+PM_IMPORTANT = 101
+PM_NORMAL = 100
 
 
 def create_error_json_obj(error_code: int, message: str) -> Dict[str, object]:

@@ -16,10 +16,7 @@ class CreateApply(models.Model):
     handler = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='CreateApply_handler', null=True)
     handle_time = models.BigIntegerField(null=True)
-
-    # class Meta:
-    #     app_label = 'webservice'
-    #     db_table = 'webservice_create_apply'
+    handle_reason = models.TextField(null=True)
 
     def toDict(self) -> Dict[str, object]:
         """
@@ -40,4 +37,5 @@ class CreateApply(models.Model):
             'apply_time': self.apply_time,
             'handler': handler,
             'handle_time': self.handle_time,
+            'handle_reason': self.handle_reason,
         }
