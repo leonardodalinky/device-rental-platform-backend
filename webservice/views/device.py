@@ -1,5 +1,5 @@
 from django.db.models.query import QuerySet
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, JsonResponse, QueryDict
 from django.views import View
 
 from ..common.common import create_error_json_obj, create_success_json_res_with
@@ -55,8 +55,9 @@ class DeviceId(View):
         user: User = request.user
         if user.get_group() != 'admin' and device.owner.user_id != user.user_id:
             return JsonResponse(create_error_json_obj(404, '此设备非你所属'), status=400)
-        name = request.POST.get('name', '')
-        description = request.POST.get('description', '')
+        patch_params = QueryDict(request.body)
+        name = patch_params.get('name', '')
+        description = patch_params.get('description', '')
         if name != '':
             device.name = name
         if description != '':

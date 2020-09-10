@@ -14,6 +14,7 @@ class ApplyBorrowDevice(View):
     """
     借用设备申请与查看自己的申请
     """
+
     def post(self, request: HttpRequest, **kwargs) -> JsonResponse:
         applicant = request.user
         device_id = request.POST.get('device_id')
@@ -31,15 +32,13 @@ class ApplyBorrowDevice(View):
         device: Device = devices.first()
         if device.borrowed_time is not None:
             return JsonResponse(common.create_error_json_obj(401, '该设备已借出'), status=400)
-        p = DeviceApply.objects.create(device=device,
+        p: DeviceApply = DeviceApply.objects.create(device=device,
                                        device_owner=device.owner,
                                        status=common.PENDING,
                                        applicant=applicant,
                                        apply_time=int(datetime.now(timezone.utc).timestamp()),
                                        reason=reason,
                                        return_time=return_time)
-        p.save()
-        print(p)
         #申请未处理提醒
         Timer(return_time - int(datetime.now(timezone.utc).timestamp()), mail.send_apply_overtime(applicant.email, p))
         

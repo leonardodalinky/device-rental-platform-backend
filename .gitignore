@@ -147,3 +147,6 @@ mail_settings.py
 .vscode/
 
 .idea/
+
+# server
+*.sh

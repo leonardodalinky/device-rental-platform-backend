@@ -27,7 +27,7 @@ SECRET_KEY = 'er$uhr6bw-5@ic&9(n1pwhilcb6^20^p6dr4zp2=o6(q+ye5n1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ayajike.xyz']
 
 
 # Application definition

@@ -6,8 +6,8 @@ from typing import Dict, List
 
 
 class PermApply(models.Model):
-    apply_id = models.IntegerField(primary_key=True)
-    models.AutoField(apply_id)
+    apply_id = models.AutoField(primary_key=True)
+    # models.AutoField(apply_id)
     status = models.IntegerField()
     applicant = models.ForeignKey(User, related_name='PermApply_applicant', on_delete=models.CASCADE)
     apply_time = models.BigIntegerField()
