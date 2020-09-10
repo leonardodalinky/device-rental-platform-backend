@@ -188,7 +188,7 @@ urlpatterns = [
              'perm_required': ['can_post_apply_become_provider_apply_id']
          },
          name='post_apply_become_provider_apply_id_reject'),
-    ## 拒绝成为设备拥有者
+    ## 撤回成为设备拥有者
     path('apply/become-provider/<int:apply_id>/cancel', perm_apply.post_apply_become_provider_apply_id_cancel,
          {
              'method': 'POST',
@@ -228,7 +228,7 @@ urlpatterns = [
              'perms_required': ['can_post_apply_new_device_apply_id']
          },
          name='post_apply_new_device_apply_id_reject'),
-    ## 拒绝上架设备
+    ## 撤回上架设备
     path('apply/new-device/<int:apply_id>/cancel', create_apply.post_apply_new_device_apply_id_cancel,
          {
              'method': 'POST',
@@ -275,7 +275,7 @@ urlpatterns = [
              'perms_required': ['can_post_apply_borrow_device_apply_id']
          },
          name='post_apply_borrow_device_apply_id_reject'),
-    ## 拒绝租借
+    ## 撤回租借
     path('apply/borrow-device/<int:apply_id>/cancel', device_apply.post_apply_borrow_device_apply_id_cancel,
          {
              'method': 'POST',
@@ -299,14 +299,14 @@ urlpatterns = [
          },
          name='post_pm_send_receiver_id'),
     ## 获取自己收到的站内信列表
-    path('pm/send/<int:receiver_id>', private_message.get_pm_receive,
+    path('pm/receive', private_message.get_pm_receive,
          {
              'method': 'GET',
              'perms_required': ['can_get_pm_receive']
          },
          name='get_pm_receive'),
     ## 获取自己发出过的的站内信列表
-    path('pm/send/<int:receiver_id>', private_message.get_pm_send,
+    path('pm/send', private_message.get_pm_send,
          {
              'method': 'GET',
              'perms_required': ['can_get_pm_send']
@@ -320,28 +320,28 @@ urlpatterns = [
          },
          name='post_pm_mark_all'),
     ## 标记为已读
-    path('pm/mark-all', private_message.post_pm_mark,
+    path('pm/mark', private_message.post_pm_mark,
          {
              'method': 'POST',
              'perms_required': ['can_post_pm_mark']
          },
          name='post_pm_mark'),
     ## 获取自己未读的站内信数量
-    path('pm/mark-all', private_message.get_pm_unread_count,
+    path('pm/unread-count', private_message.get_pm_unread_count,
          {
              'method': 'GET',
              'perms_required': ['can_get_pm_unread_count']
          },
          name='get_pm_unread_count'),
     ## 删除自己收到的站内信
-    path('pm/mark-all', private_message.delete_pm_pm_id,
+    path('pm/<int:pm_id>', private_message.delete_pm_pm_id,
          {
              'method': 'DELETE',
              'perms_required': ['can_delete_pm_pm_id']
          },
          name='delete_pm_pm_id'),
     ## 删除自己收到的所有站内信
-    path('pm/mark-all', private_message.delete_pm_all,
+    path('pm/all', private_message.delete_pm_all,
          {
              'method': 'DELETE',
              'perms_required': ['can_delete_pm_all']
