@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 
 
 def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
-    devices: QuerySet = Device.objects.filter(device__device_id=device_id)
+    devices: QuerySet = Device.objects.filter(device_id=device_id)
     if devices.count() != 1:
         return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
     device: Device = devices.get()
@@ -27,18 +27,19 @@ def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -
 
 
 def post_device_id_comment(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:
-    devices: QuerySet = Device.objects.filter(device__device_id=device_id)
+    devices: QuerySet = Device.objects.filter(device_id=device_id)
     if devices.count() != 1:
         return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
     content: str = request.POST.get('content', None)
     if content is None or content == '':
         return JsonResponse(create_error_json_obj(802, '评论不得为空'), status=400)
     device: Device = devices.get()
-    device.comment_set.create(
+    comment: Comment = device.comment_set.create(
         commenter=request.user,
         comment_time=int(datetime.now(timezone.utc).timestamp()),
         content=content,
     )
+    return create_success_json_res_with({"comment_id": comment.comment_id})
 
 
 def delete_device_id_comment_id(request: HttpRequest, device_id: int, comment_id: int, **kwargs) -> JsonResponse:
@@ -49,7 +50,7 @@ def delete_device_id_comment_id(request: HttpRequest, device_id: int, comment_id
         comments = _user.comment_set.filter(device__device_id=device_id)
     else:
         # 平台管理员等
-        devices: QuerySet = Device.objects.filter(device__device_id=device_id)
+        devices: QuerySet = Device.objects.filter(device_id=device_id)
         if devices.count() != 1:
             return JsonResponse(create_error_json_obj(801, '设备不存在'), status=400)
         device: Device = devices.get()
