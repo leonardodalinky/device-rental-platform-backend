@@ -8,6 +8,7 @@ from .views import log
 from .views import perm_apply
 from .views import user
 from .views import dashboard
+from .views import credit_apply
 from .views import private_message
 
 # TODO: 增加各个 view
@@ -289,6 +290,39 @@ urlpatterns = [
              'perms_required': ['can_post_apply_return_device_device_id']
          },
          name='post_apply_return_device'),
+    
+    # 恢复信用分申请
+    ## 申请恢复信用分与查看自己的申请
+    path('apply/recover-credit', credit_apply.ApplyRecoverCredit.as_view(),
+         {
+             'method': ['POST', 'GET'],
+             'perms_required': {
+                 'POST': ['can_post_apply_recover_credit'],
+                 'GET': ['can_get_apply_recover_credit']
+             }
+         },
+         name='apply_recover_credit'),
+    ## 查看全部的恢复信用分申请（管理员）
+    path('apply/recover-credit/admin', credit_apply.get_apply_recover_credit_admin,
+         {
+             'method': 'GET',
+             'perm_required': ['can_get_apply_recover_credit_admin']
+         },
+         name='get_apply_recover_credit_admin'),
+    ## 允许恢复信用分
+    path('apply/recover-credit/<int:apply_id>/accept', credit_apply.post_apply_recover_credit_apply_id_accept,
+         {
+             'method': 'POST',
+             'perm_required': ['can_post_apply_recover_credit_apply_id']
+         },
+         name='post_apply_recover_credit_apply_id_accept'),
+    ## 拒绝恢复信用分
+    path('apply/recover-credit/<int:apply_id>/reject', credit_apply.post_apply_recover_credit_apply_id_reject,
+         {
+             'method': 'POST',
+             'perm_required': ['can_post_apply_recover_credit_apply_id']
+         },
+         name='post_apply_recover_credit_apply_id_reject'),
 
     # 站内信
     ## 发送站内信
