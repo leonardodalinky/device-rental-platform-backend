@@ -62,7 +62,7 @@ def get_pm_send(request: HttpRequest, **kwargs) -> JsonResponse:
     sender: User = request.user
     pms: QuerySet = PrivateMessage.objects.filter(sender=sender)
     return common.create_success_json_res_with({
-        'messages': map(lambda x: x.toReceiveDict(), pms),
+        'messages': map(lambda x: x.toSendDict(), pms),
     })
 
 
@@ -72,7 +72,7 @@ def get_pm_send_receive(request: HttpRequest, **kwargs) -> JsonResponse:
     pms_receiver: QuerySet = PrivateMessage.objects.filter(receiver=user)
     return common.create_success_json_res_with({
         'messages': {
-            'send': map(lambda x: x.toReceiveDict(), pms_sender),
+            'send': map(lambda x: x.toSendDict(), pms_sender),
             'receive': map(lambda x: x.toReceiveDict(), pms_receiver),
         }
     })

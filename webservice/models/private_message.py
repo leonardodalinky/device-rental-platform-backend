@@ -37,7 +37,7 @@ class PrivateMessage(models.Model):
             'send_time': self.send_time,
         }
 
-    def toPostDict(self) -> Dict[str, object]:
+    def toSendDict(self) -> Dict[str, object]:
         """
         自己发出的私人信息申请模型转字典类型对象
 
