@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from threading import Timer
 
 from django.http import HttpRequest, JsonResponse
 from django.views import View
@@ -110,11 +111,19 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     application.save()
     device: Device = application.device
     if device.borrowed_time is not None:
+        application.status = common.REJECTED
+        application.save()
         return JsonResponse(common.create_error_json_obj(404, '该设备已被租借'), status=400)
     device.borrower = application.applicant
     device.borrowed_time = int(datetime.now(timezone.utc).timestamp())
     device.return_time = application.return_time
+    
     device.save()
+
+    #归回设备提醒
+    ##设备使用期限即将到期提醒（测试时为1s前）
+    
+
     return common.create_success_json_res_with({})
 
 
