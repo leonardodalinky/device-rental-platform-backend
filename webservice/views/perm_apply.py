@@ -3,7 +3,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
 from datetime import datetime, timezone
 
-from ..common import common,mail
+from ..common import common, mail, pm
 from ..models.device import Device
 from ..models.user import User
 from ..models.perm_apply import PermApply
@@ -81,7 +81,10 @@ def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, *
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.handle_reason = handle_reason
     application.save()
-    mail.send_perm_apply_accept(applicant.email,application)
+
+    pm.send_system_message_to_by_user(application.applicant, common.PM_IMPORTANT,
+                                      common.create_prem_apply_handle_message(common.APPROVED))
+    mail.send_perm_apply_accept(applicant.email, application)
     return common.create_success_json_res_with({})
 
 
@@ -108,7 +111,10 @@ def post_apply_become_provider_apply_id_reject(request: HttpRequest, apply_id: i
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.handle_reason = handle_reason
     application.save()
-    mail.send_perm_apply_reject(application.applicant.email,application)
+    mail.send_perm_apply_reject(application.applicant.email, application)
+
+    pm.send_system_message_to_by_user(application.applicant, common.PM_IMPORTANT,
+                                      common.create_prem_apply_handle_message(common.REJECTED))
     return common.create_success_json_res_with({})
 
 
@@ -124,4 +130,7 @@ def post_apply_become_provider_apply_id_cancel(request: HttpRequest, apply_id: i
     apply.handler = user
     apply.handle_time = int(datetime.now(timezone.utc).timestamp())
     apply.save()
+
+    pm.send_system_message_to_by_user(apply.applicant, common.PM_IMPORTANT,
+                                      common.create_prem_apply_handle_message(common.CANCELED))
     return common.create_success_json_res_with({})

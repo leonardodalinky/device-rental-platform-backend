@@ -96,8 +96,7 @@ def send_device_apply_accept(mail_to, application):
         '您的租借设备申请已通过' +
         '\n申请 ID: ' + str(application.apply_id) +
         '\n设备名称: ' + application.device.name +
-        '\n处理人: ' + application.handler.name +
-        '\n预计返还时间: ' + application.return_time,
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=True,
@@ -110,8 +109,7 @@ def send_device_apply_reject(mail_to, application):
         '您的租借设备申请未通过' +
         '\n申请 ID: ' + str(application.apply_id) +
         '\n设备名称: ' + application.device.name +
-        '\n处理人: ' + application.handler.name +
-        '\n预计返还时间: ' + application.return_time,
+        '\n处理人: ' + application.handler.name,
         'drp404notfound@163.com',
         [mail_to],
         fail_silently=True,

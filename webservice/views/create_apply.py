@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from ..common import common,mail
+from ..common import common, mail, pm
 from ..models.create_apply import CreateApply
 from ..models.device import Device
 from ..models.user import User
@@ -84,7 +84,11 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
                           owner=application.applicant,
                           created_time=int(datetime.now(timezone.utc).timestamp()))
     application.save()
-    mail.send_perm_apply_accept(application.applicant.email,application)
+
+    pm.send_system_message_to_by_user(application.applicant, common.PM_IMPORTANT,
+                                      common.create_create_apply_handle_message(application.device_name,
+                                                                                common.APPROVED))
+    mail.send_create_apply_accept(application.applicant.email, application)
     return common.create_success_json_res_with({})
 
 
@@ -111,6 +115,10 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.handle_reason = handle_reason
     application.save()
+
+    pm.send_system_message_to_by_user(application.applicant, common.PM_IMPORTANT,
+                                      common.create_create_apply_handle_message(application.device_name,
+                                                                                common.REJECTED))
     mail.send_create_apply_reject(application.applicant.email, application)
     return common.create_success_json_res_with({})
 
@@ -127,4 +135,8 @@ def post_apply_new_device_apply_id_cancel(request: HttpRequest, apply_id: int, *
     apply.handler = user
     apply.handle_time = int(datetime.now(timezone.utc).timestamp())
     apply.save()
+
+    pm.send_system_message_to_by_user(apply.applicant, common.PM_IMPORTANT,
+                                      common.create_create_apply_handle_message(apply.device_name,
+                                                                                common.CANCELED))
     return common.create_success_json_res_with({})

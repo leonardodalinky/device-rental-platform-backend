@@ -88,9 +88,16 @@ def post_pm_mark_all(request: HttpRequest, **kwargs) -> JsonResponse:
 
 
 def post_pm_mark(request: HttpRequest, **kwargs) -> JsonResponse:
-    pm_ids: List[int] = request.POST.get('pm_ids')
+    pm_ids: str = request.POST.get('pm_ids')
+    if pm_ids is not None:
+        try:
+            pm_list = list([int(v) for v in pm_ids.split(',')])
+        except:
+            pm_list = []
+    else:
+        pm_list = []
     receiver: User = request.user
-    pms: QuerySet[PrivateMessage] = PrivateMessage.objects.filter(receiver=receiver, read=False, pm_id__in=pm_ids)
+    pms: QuerySet[PrivateMessage] = PrivateMessage.objects.filter(receiver=receiver, read=False, pm_id__in=pm_list)
     for pm in pms:
         pm.read = True
         pm.save()
