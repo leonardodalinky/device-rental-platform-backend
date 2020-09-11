@@ -18,6 +18,7 @@ class CreateApply(models.Model):
         User, on_delete=models.SET_NULL, related_name='CreateApply_handler', null=True)
     handle_time = models.BigIntegerField(null=True)
     handle_reason = models.TextField(null=True)
+    meta_header = models.TextField(null=True)
 
     def toDict(self) -> Dict[str, object]:
         """
@@ -39,4 +40,5 @@ class CreateApply(models.Model):
             'handler': handler,
             'handle_time': self.handle_time,
             'handle_reason': self.handle_reason,
+            'meta_header': self.meta_header,
         }

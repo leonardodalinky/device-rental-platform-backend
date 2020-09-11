@@ -19,13 +19,15 @@ class ApplyNewDevice(View):
         user: User = request.user
         device_name = request.POST.get('device_name')
         device_description = request.POST.get('device_description')
+        meta_header = request.POST.get('meta_header')
         if device_name is None or device_description is None:
             return JsonResponse(common.create_error_json_obj(0, '参数错误'))
         p: CreateApply = CreateApply.objects.create(device_name=device_name,
                                                     device_description=device_description,
                                                     status=common.PENDING,
                                                     applicant=user,
-                                                    apply_time=int(datetime.now(timezone.utc).timestamp()))
+                                                    apply_time=int(datetime.now(timezone.utc).timestamp()),
+                                                    meta_header=meta_header)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
@@ -72,7 +74,7 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
     applications = CreateApply.objects.filter(apply_id=apply_id)
     if applications.count() == 0:
         return JsonResponse(common.create_error_json_obj(303,'该申请不存在'), status=400)
-    application = applications.first()
+    application: CreateApply = applications.first()
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.APPROVED
@@ -83,7 +85,8 @@ def post_apply_new_device_apply_id_accept(request: HttpRequest, apply_id, **kwar
     Device.objects.create(name=application.device_name,
                           description=application.device_description,
                           owner=application.applicant,
-                          created_time=int(datetime.now(timezone.utc).timestamp()))
+                          created_time=int(datetime.now(timezone.utc).timestamp()),
+                          meta_header=application.meta_header)
     application.save()
 
     pm.send_system_message_to_by_user(application.applicant, common.PM_IMPORTANT,
@@ -97,6 +100,8 @@ def post_apply_new_device_apply_id_reject(request: HttpRequest, apply_id, **kwar
     """
     拒绝提供设备
 
+    :param apply_id:
+    :type apply_id:
     :param request: 视图请求
     :type request: HttpRequest
     :param kwargs: 额外参数
