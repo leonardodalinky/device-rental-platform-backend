@@ -3,20 +3,18 @@
     Date: 2020/09/09
     Description: 数据统计视图
 """
-from django.http import HttpRequest, JsonResponse
-from django.db.models.query import QuerySet
+from datetime import datetime, timezone
+
 from django.db.models import Q
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
 
 from ..common import common
-from ..models.comment import Comment
+from ..models.create_apply import CreateApply
 from ..models.device import Device
-from ..models.user import User
 from ..models.device_apply import DeviceApply
 from ..models.perm_apply import PermApply
-from ..models.create_apply import CreateApply
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group
-from typing import Dict, List
-from datetime import datetime, timezone
+from ..models.user import User
 
 
 def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:

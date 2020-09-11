@@ -1,8 +1,9 @@
+from typing import Dict
+
 from django.db import models
 
 # Create your models here.
 from .user import User
-from typing import Dict, List
 
 
 class Device(models.Model):
@@ -11,7 +12,7 @@ class Device(models.Model):
     description = models.TextField()
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Device_owner')
     created_time = models.BigIntegerField()
-    borrower = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='Device_borrower')
+    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Device_borrower')
     borrowed_time = models.BigIntegerField(null=True)
     return_time = models.BigIntegerField(null=True)
 

@@ -3,16 +3,16 @@
     Date: 2020/09/09
     Description: 评价视图
 """
-from django.http import HttpRequest, JsonResponse
-from django.db.models.query import QuerySet
-from django.views import View
+from datetime import datetime, timezone
+from typing import List
 
-from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
+
+from ..common.common import create_error_json_obj, create_success_json_res_with
 from ..models.comment import Comment
 from ..models.device import Device
 from ..models.user import User
-from typing import Dict, List
-from datetime import datetime, timezone
 
 
 def get_device_id_comment_list(request: HttpRequest, device_id: int, **kwargs) -> JsonResponse:

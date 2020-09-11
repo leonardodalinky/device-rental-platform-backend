@@ -1,11 +1,10 @@
-from django.db.models.query import QuerySet
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views import View
 from datetime import datetime, timezone
 
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
+from django.views import View
+
 from ..common import common, mail, pm
-from ..models.device import Device
-from ..models.user import User
 from ..models.perm_apply import PermApply
 from ..models.user import User
 
@@ -52,7 +51,8 @@ def get_apply_become_provider_admin(request: HttpRequest, **kwargs) -> JsonRespo
     applications = PermApply.objects.all()
     if len(applications) == 0:
         return common.create_success_json_res_with({'applications': []})
-    return common.create_success_json_res_with({'applications': list([application.toDict() for application in applications])})
+    return common.create_success_json_res_with(
+        {'applications': list([application.toDict() for application in applications])})
 
 
 def post_apply_become_provider_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:

@@ -14,6 +14,7 @@ class ApplyNewDevice(View):
     """
     提供设备申请与查看自己的申请
     """
+
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         user: User = request.user
         device_name = request.POST.get('device_name')

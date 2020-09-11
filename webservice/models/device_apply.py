@@ -19,7 +19,7 @@ class DeviceApply(models.Model):
         User, on_delete=models.CASCADE, related_name='DeviceApply_applicant')
     apply_time = models.BigIntegerField()
     handler = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='DeviceApply_handler', null=True)
+        User, on_delete=models.SET_NULL, related_name='DeviceApply_handler', null=True)
     handle_time = models.BigIntegerField(null=True)
     reason = models.TextField()
     handle_reason = models.TextField(null=True)

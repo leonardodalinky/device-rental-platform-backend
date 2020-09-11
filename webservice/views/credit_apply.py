@@ -1,11 +1,10 @@
-from django.db.models.query import QuerySet
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views import View
 from datetime import datetime, timezone
 
-from ..common import common,mail
-from ..models.device import Device
-from ..models.user import User
+from django.db.models.query import QuerySet
+from django.http import HttpRequest, JsonResponse
+from django.views import View
+
+from ..common import common, mail
 from ..models.credit_apply import CreditApply
 from ..models.user import User
 
@@ -24,9 +23,9 @@ class ApplyRecoverCredit(View):
         applications: QuerySet = CreditApply.objects.filter(applicant=applicant, status=common.PENDING)
         applications.delete()
         p: CreditApply = CreditApply.objects.create(status=common.PENDING,
-                                                applicant=applicant,
-                                                apply_time=int(datetime.now(timezone.utc).timestamp()),
-                                                reason=reason)
+                                                    applicant=applicant,
+                                                    apply_time=int(datetime.now(timezone.utc).timestamp()),
+                                                    reason=reason)
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
     def get(self, request: HttpRequest, **kwargs) -> JsonResponse:
@@ -52,7 +51,8 @@ def get_apply_recover_credit_admin(request: HttpRequest, **kwargs) -> JsonRespon
     applications = CreditApply.objects.all()
     if len(applications) == 0:
         return common.create_success_json_res_with({'applications': []})
-    return common.create_success_json_res_with({'applications': list([application.toDict() for application in applications])})
+    return common.create_success_json_res_with(
+        {'applications': list([application.toDict() for application in applications])})
 
 
 def post_apply_recover_credit_apply_id_accept(request: HttpRequest, apply_id, **kwargs) -> JsonResponse:
@@ -79,7 +79,7 @@ def post_apply_recover_credit_apply_id_accept(request: HttpRequest, apply_id, **
     application.handler_id = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
-    mail.send_credit_apply_accept(applicant.email,application)
+    mail.send_credit_apply_accept(applicant.email, application)
     return common.create_success_json_res_with({})
 
 
@@ -104,5 +104,5 @@ def post_apply_recover_credit_apply_id_reject(request: HttpRequest, apply_id, **
     application.handler_id = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
-    mail.send_credit_apply_reject(application.applicant.email,application)
+    mail.send_credit_apply_reject(application.applicant.email, application)
     return common.create_success_json_res_with({})

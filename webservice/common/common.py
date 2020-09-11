@@ -1,8 +1,8 @@
+from typing import Dict
+
 from django.http import JsonResponse
-from typing import Dict, List
 
 # 申请状态
-
 REJECTED: int = -1
 PENDING: int = 0
 APPROVED: int = 1

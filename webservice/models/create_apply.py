@@ -1,8 +1,9 @@
+from typing import Dict
+
 from django.db import models
 
 # Create your models here.
 from .user import User
-from typing import Dict, List
 
 
 class CreateApply(models.Model):
@@ -14,7 +15,7 @@ class CreateApply(models.Model):
         User, on_delete=models.CASCADE, related_name='CreateApply_applicant')
     apply_time = models.BigIntegerField()
     handler = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='CreateApply_handler', null=True)
+        User, on_delete=models.SET_NULL, related_name='CreateApply_handler', null=True)
     handle_time = models.BigIntegerField(null=True)
     handle_reason = models.TextField(null=True)
 
