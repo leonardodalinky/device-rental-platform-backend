@@ -14,6 +14,7 @@ class Device(models.Model):
     created_time = models.BigIntegerField()
     borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='Device_borrower')
     borrowed_time = models.BigIntegerField(null=True)
+    # 设备应该归还的时间
     return_time = models.BigIntegerField(null=True)
     meta_header = models.TextField(null=True)
 

@@ -40,7 +40,7 @@ def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
         # 平台正被借用设备总数（不包括过期）
         "device_borrowed": Device.objects.filter(~Q(borrower=None)).count(),
         # 平台过期借用设备总数
-        "device_expired": Device.objects.filter(return_time__gt=now_time).count(),
+        "device_expired": Device.objects.filter(return_time__lt=now_time).count(),
         # 平台空闲设备总数
         "device_free": Device.objects.filter(borrower=None).count(),
         # 平台设备总共借用次数（不包括申请中）

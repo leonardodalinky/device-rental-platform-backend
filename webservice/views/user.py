@@ -17,6 +17,7 @@ from django.views import View
 from ..common.common import create_error_json_obj, create_not_login_json_response, create_success_json_res_with
 from ..common.mail import send_verification_code
 from ..models.user import User, ActivateCode
+from ..models.device import Device
 
 
 # 用户基本操作
@@ -301,6 +302,5 @@ class AdminUserId(View):
             return JsonResponse(create_error_json_obj(301, '无此用户'), status=400)
         user: User = users.get()
         # 删除用户的所有设备（暗含删除所有相关申请）
-        user.Device_owner_set.all().delete()
         user.delete()
         return create_success_json_res_with({})
