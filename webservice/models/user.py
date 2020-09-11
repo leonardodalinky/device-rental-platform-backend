@@ -114,10 +114,12 @@ class CustomUserManager(BaseUserManager):
     """
 
     def create_user(self, student_id: int, password: str, name: str, register_time: int, email: str,
-                    group: str = 'borrower', credit: int = 100):
+                    group: str = 'borrower', credit_score: int = 100):
         """
         生成新的用户
 
+        :param credit:
+        :type credit:
         :param student_id: 学号
         :type student_id: int
         :param password: 密码
@@ -140,17 +142,20 @@ class CustomUserManager(BaseUserManager):
         except:
             raise ValueError('Wrong email address')
         user: User = self.model(student_id=student_id, name=name, register_time=register_time, email=email,
-                                credit_score=credit)
+                                credit_score=credit_score)
         user.set_password(password)
         user.save()
         user.groups.add(get_group(group))
         return user
 
-    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str,
-                         credit: int = 100):
+    def create_superuser(self, student_id: int, password: str, name: str, register_time: int, email: str):
         """
         生成新的管理员
 
+        :param credit_score:
+        :type credit_score:
+        :param credit:
+        :type credit:
         :param student_id: 学号
         :type student_id: int
         :param password: 密码
