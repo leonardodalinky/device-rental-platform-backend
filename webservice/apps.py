@@ -114,6 +114,12 @@ class PermissionValidateMiddleware:
             raise ValueError('参数类型错误')
 
 
+# TODO: 不需要记录的模块
+Not_Log_Module = ['get_pm_unread_count']
+# TODO: 需要记录的模块(未启用）
+Required_Log_Module = []
+
+
 class UserLogMiddleware:
     """
     用户级日志的中间件
@@ -137,6 +143,8 @@ class UserLogMiddleware:
         if user.is_authenticated:
             r = resolve(request.path)
             url_name: str = r.url_name
+            if url_name in Not_Log_Module:
+                return response
             if response.status_code == 200:
                 logger.create_info_log_now(r, user, '成功')
             else:
