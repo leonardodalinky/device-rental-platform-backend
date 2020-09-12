@@ -40,14 +40,11 @@ class ApplyBorrowDevice(View):
             return JsonResponse(common.create_error_json_obj(401, '该设备已借出'), status=400)
         p: DeviceApply = DeviceApply.objects.create(device=device,
                                                     device_owner=device.owner,
+                                                    applicant=applicant,
                                                     status=common.PENDING,
                                                     apply_time=int(datetime.now(timezone.utc).timestamp()),
                                                     reason=reason,
                                                     return_time=return_time)
-
-        # #申请未处理提醒
-        # args = (applicant.email, p.apply_id, int(return_time) - int(datetime.now(timezone.utc).timestamp()))
-        # Thread(target=mail.send_apply_overtime, args=args).start()
 
         return common.create_success_json_res_with({'apply_id': p.apply_id})
 
