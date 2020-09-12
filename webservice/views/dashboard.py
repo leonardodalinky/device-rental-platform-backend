@@ -14,6 +14,7 @@ from ..models.create_apply import CreateApply
 from ..models.device import Device
 from ..models.device_apply import DeviceApply
 from ..models.perm_apply import PermApply
+from ..models.credit_apply import CreditApply
 from ..models.user import User
 
 
@@ -44,13 +45,15 @@ def get_dashboard(request: HttpRequest, **kwargs) -> JsonResponse:
         # 平台空闲设备总数
         "device_free": Device.objects.filter(borrower=None).count(),
         # 平台设备总共借用次数（不包括申请中）
-        "apply_borrow_total": DeviceApply.objects.filter(status=common.APPROVED).count(),
+        "apply_borrow_total": DeviceApply.objects.filter(~Q(status=common.PENDING) & ~Q(status=common.REJECTED)).count(),
         # 平台设备借用申请中数目
-        "apply_borrow_pending": DeviceApply.objects.filter(status=common.PENDING).count(),
+        "apply_borrow": DeviceApply.objects.filter(status=common.PENDING).count(),
         # 平台正在申请成为provider的数量
         "apply_become_provider": PermApply.objects.filter(status=common.PENDING).count(),
         # 平台正在申请上架设备的数量
         "apply_create_device": CreateApply.objects.filter(status=common.PENDING).count(),
+        # 平台正在申请分恢复处理的数量
+        "apply_recover_credit": CreditApply.objects.filter(status=common.PENDING).count(),
         # 平台设备归还次数
         "return_device": DeviceApply.objects.filter(~Q(return_time=None)).count(),
         # 平台用户人数
