@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 # TODO: 千万别删
 from .mail_settings import *
-import djcelery
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
