@@ -43,8 +43,7 @@ class ApplyBorrowDevice(View):
                                                     status=common.PENDING,
                                                     apply_time=int(datetime.now(timezone.utc).timestamp()),
                                                     reason=reason,
-                                                    return_time=return_time,
-                                                    meta_header=meta_header)
+                                                    return_time=return_time)
 
         # #申请未处理提醒
         # args = (applicant.email, p.apply_id, int(return_time) - int(datetime.now(timezone.utc).timestamp()))
@@ -150,12 +149,6 @@ def post_apply_borrow_device_apply_id_accept(request: HttpRequest, apply_id, **k
     # 归还设备提醒
     applicant = application.applicant
     mail_to = applicant.email
-    # ##设备使用期限即将到期提醒（测试时为1s前）
-    # args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()) - 1)
-    # Thread(target = mail.send_remind_return, args = args).start()
-    # ##设备到期提醒
-    # args = (mail_to, device.device_id, applicant.user_id, application.return_time - int(datetime.now(timezone.utc).timestamp()))
-    # Thread(target = mail.send_borrow_overtime, args = args).start()
 
     mail.send_device_apply_accept(applicant.email, application)
     return common.create_success_json_res_with({})
@@ -227,7 +220,7 @@ def post_apply_return_device(request: HttpRequest, device_id: int, **kwargs) -> 
     overtime = int(datetime.now(timezone.utc).timestamp() - device.return_time)
     if overtime:
         borrower = device.borrower
-        borrower.credit_score = 0
+        borrower.credit_score -= 10
         borrower.save()
 
     # 设备申请

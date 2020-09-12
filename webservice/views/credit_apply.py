@@ -73,10 +73,10 @@ def post_apply_recover_credit_apply_id_accept(request: HttpRequest, apply_id, **
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     applicant: User = application.applicant
-    applicant.credit_score = request.POST.credit_score
+    applicant.credit_score = 100
     applicant.save()
     application.status = common.APPROVED
-    application.handler_id = request.user
+    application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     mail.send_credit_apply_accept(applicant.email, application)
@@ -101,7 +101,7 @@ def post_apply_recover_credit_apply_id_reject(request: HttpRequest, apply_id, **
     if application.status != common.PENDING:
         return JsonResponse(common.create_error_json_obj(304, '该申请已处理'), status=400)
     application.status = common.REJECTED
-    application.handler_id = request.user
+    application.handler = request.user
     application.handle_time = int(datetime.now(timezone.utc).timestamp())
     application.save()
     mail.send_credit_apply_reject(application.applicant.email, application)
